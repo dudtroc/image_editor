@@ -1,0 +1,25 @@
+.api-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.api-selector-label {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.api-select {
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.api-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}

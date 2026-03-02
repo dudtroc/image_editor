@@ -1,0 +1,65 @@
+.tab-text2image .tab-desc {
+  color: var(--muted);
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+}
+
+.prompt-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.prompt-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  resize: vertical;
+  min-height: 100px;
+}
+
+.prompt-input::placeholder {
+  color: var(--muted);
+}
+
+.prompt-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.tab-text2image .btn-primary {
+  padding: 12px 24px;
+  align-self: flex-start;
+}
+
+.tab-text2image .message.error {
+  margin-bottom: 20px;
+}
+
+.result-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+}
+
+.generated-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background: var(--bg);
+}
+
+.tab-text2image .btn-secondary {
+  padding: 10px 20px;
+}
