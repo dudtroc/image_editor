@@ -9,7 +9,6 @@ const GEMINI_IMAGE_MODEL_IDS = [
   "gemini-2.5-flash-preview-image",
 ];
 
-/** Gemini ImageConfig: aspectRatio, imageSize (1K, 2K, 4K) */
 const GEMINI_ASPECT_RATIOS = [
   { value: "1:1", label: "1:1 (정사각)" },
   { value: "2:3", label: "2:3" },
@@ -26,20 +25,39 @@ const GEMINI_IMAGE_SIZES = [
   { value: "4K", label: "4K" },
 ];
 
-/** 무료 한도에서 사용 가능한 모델을 상단에 배치 (Nano Banana Pro 등은 무료 한도 0일 수 있음) */
-/** @type {{ id: string, label: string, aspectRatios: { value: string, label: string }[], imageSizes: { value: string, label: string }[] }[]} */
-export const GEMINI_IMAGE_MODELS = [
+export const GEMINI_IMAGE2IMAGE_MODELS = [
   { id: "gemini-2.0-flash-exp-image-generation", label: "Gemini 2.0 Flash (실험)", aspectRatios: GEMINI_ASPECT_RATIOS, imageSizes: GEMINI_IMAGE_SIZES },
   { id: "gemini-2.5-flash-preview-image", label: "Gemini 2.5 Flash Image", aspectRatios: GEMINI_ASPECT_RATIOS, imageSizes: GEMINI_IMAGE_SIZES },
-  { id: "gemini-3.1-flash-image-preview", label: "Nano Banana 2 (Gemini 3.1 Flash Image)", aspectRatios: GEMINI_ASPECT_RATIOS, imageSizes: GEMINI_IMAGE_SIZES },
-  { id: "gemini-3-pro-image-preview", label: "Nano Banana Pro (Gemini 3 Pro Image)", aspectRatios: GEMINI_ASPECT_RATIOS, imageSizes: GEMINI_IMAGE_SIZES },
+  { id: "gemini-3.1-flash-image-preview", label: "Nano Banana 2", aspectRatios: GEMINI_ASPECT_RATIOS, imageSizes: GEMINI_IMAGE_SIZES },
+  { id: "gemini-3-pro-image-preview", label: "Nano Banana Pro", aspectRatios: GEMINI_ASPECT_RATIOS, imageSizes: GEMINI_IMAGE_SIZES },
 ];
 
-export async function generateImageGemini(prompt, apiKey, model = DEFAULT_MODEL, opts = {}) {
+/**
+ * @param {string[]} imagesB64 - base64 이미지 배열 (data URL 제거된 순수 base64)
+ * @param {string} prompt
+ * @param {string} apiKey
+ * @param {string} model
+ * @param {{ aspectRatio?: string, imageSize?: string }} opts
+ */
+export async function image2imageGemini(imagesB64, prompt, apiKey, model = DEFAULT_MODEL, opts = {}) {
+  if (!imagesB64?.length) throw new Error("At least one image is required.");
   const ai = new GoogleGenAI({ apiKey });
   const effectiveModel = GEMINI_IMAGE_MODEL_IDS.includes(model) ? model : DEFAULT_MODEL;
   const aspectRatio = opts.aspectRatio ?? "1:1";
   const imageSize = opts.imageSize ?? "1K";
+
+  const parts = [
+    { text: prompt.trim() },
+    ...imagesB64.map((b64) => {
+      const clean = b64.replace(/^data:image\/\w+;base64,/, "");
+      return {
+        inlineData: {
+          mimeType: "image/png",
+          data: clean,
+        },
+      };
+    }),
+  ];
 
   const config = {
     responseModalities: ["TEXT", "IMAGE"],
@@ -51,7 +69,7 @@ export async function generateImageGemini(prompt, apiKey, model = DEFAULT_MODEL,
 
   const response = await ai.models.generateContent({
     model: effectiveModel,
-    contents: prompt,
+    contents: parts,
     config,
   });
 

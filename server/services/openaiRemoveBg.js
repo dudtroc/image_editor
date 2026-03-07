@@ -11,7 +11,7 @@ export async function removeBackgroundOpenAI(imageBuffer, apiKey) {
   const form = new FormData();
   form.append("model", MODEL);
   form.append("image", new Blob([imageBuffer], { type: getMime(imageBuffer) }), "image.png");
-  form.append("prompt", "Remove the background. Keep the main subject only. Output as PNG with transparent background.");
+  form.append("prompt", "Remove the background only. Keep the main subject and its natural shadow intact; do not remove the subject's shadow. Output as PNG with transparent background.");
   form.append("background", "transparent");
   form.append("output_format", "png");
 

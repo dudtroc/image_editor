@@ -1,9 +1,12 @@
-import { useState, useEffect, useMemo } from "react";
-import "./TabText2Image.css";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import "./TabImage2Image.css";
 
 const API_BASE = "/api";
 
-const DEFAULT_MODELS = { openai: "gpt-image-1.5", gemini: "gemini-2.0-flash-exp-image-generation" };
+const DEFAULT_MODELS = {
+  openai: "gpt-image-1.5",
+  gemini: "gemini-2.0-flash-exp-image-generation",
+};
 
 function modelId(entry) {
   return typeof entry === "string" ? entry : entry.id;
@@ -12,9 +15,23 @@ function modelLabel(entry) {
   return typeof entry === "string" ? entry : entry.label;
 }
 
-export default function TabText2Image({ provider }) {
+function fileToB64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      const b64 = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
+      resolve(b64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+export default function TabImage2Image({ provider }) {
+  const [inputImagesB64, setInputImagesB64] = useState([]);
   const [prompt, setPrompt] = useState("");
-  const [imageB64, setImageB64] = useState("");
+  const [outputImageB64, setOutputImageB64] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [models, setModels] = useState({ openai: [], gemini: [] });
@@ -25,23 +42,24 @@ export default function TabText2Image({ provider }) {
   const [imageSize, setImageSize] = useState("1K");
 
   useEffect(() => {
-    fetch(`${API_BASE}/text2image/models`)
+    fetch(`${API_BASE}/image2image/models`)
       .then((r) => r.json())
       .then((data) => setModels(data))
-      .catch(() => setModels({
-        openai: [
-          { id: "gpt-image-1.5", label: "GPT Image 1.5", sizes: [], qualities: [] },
-          { id: "gpt-image-1", label: "GPT Image 1", sizes: [], qualities: [] },
-          { id: "dall-e-3", label: "DALL·E 3", sizes: [], qualities: [] },
-          { id: "dall-e-2", label: "DALL·E 2", sizes: [] },
-        ],
-        gemini: [
-          { id: "gemini-3.1-flash-image-preview", label: "Nano Banana 2", aspectRatios: [], imageSizes: [] },
-          { id: "gemini-3-pro-image-preview", label: "Nano Banana Pro", aspectRatios: [], imageSizes: [] },
-          { id: "gemini-2.0-flash-exp-image-generation", label: "Gemini 2.0 Flash (실험)", aspectRatios: [], imageSizes: [] },
-          { id: "gemini-2.5-flash-preview-image", label: "Gemini 2.5 Flash Image", aspectRatios: [], imageSizes: [] },
-        ],
-      }));
+      .catch(() =>
+        setModels({
+          openai: [
+            { id: "gpt-image-1.5", label: "GPT Image 1.5", sizes: [], qualities: [] },
+            { id: "gpt-image-1", label: "GPT Image 1", sizes: [], qualities: [] },
+            { id: "dall-e-2", label: "DALL·E 2", sizes: [] },
+          ],
+          gemini: [
+            { id: "gemini-2.0-flash-exp-image-generation", label: "Gemini 2.0 Flash (실험)", aspectRatios: [], imageSizes: [] },
+            { id: "gemini-2.5-flash-preview-image", label: "Gemini 2.5 Flash Image", aspectRatios: [], imageSizes: [] },
+            { id: "gemini-3.1-flash-image-preview", label: "Nano Banana 2", aspectRatios: [], imageSizes: [] },
+            { id: "gemini-3-pro-image-preview", label: "Nano Banana Pro", aspectRatios: [], imageSizes: [] },
+          ],
+        })
+      );
   }, []);
 
   const currentModelEntry = useMemo(() => {
@@ -80,7 +98,52 @@ export default function TabText2Image({ provider }) {
     }
   }, [provider, currentModelEntry]);
 
+  const addFilesAsImages = useCallback((files) => {
+    const imageFiles = Array.from(files || []).filter((f) => f.type.startsWith("image/"));
+    if (!imageFiles.length) return;
+    Promise.all(imageFiles.map(fileToB64)).then((b64List) => {
+      setInputImagesB64((prev) => [...prev, ...b64List]);
+    });
+  }, []);
+
+  const onFilesChange = useCallback(
+    (e) => {
+      addFilesAsImages(e.target.files);
+      e.target.value = "";
+    },
+    [addFilesAsImages]
+  );
+
+  const [isDragging, setIsDragging] = useState(false);
+  const onDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+  const onDragLeave = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+  const onDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      addFilesAsImages(e.dataTransfer?.files);
+    },
+    [addFilesAsImages]
+  );
+
+  const removeInputImage = useCallback((index) => {
+    setInputImagesB64((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
   const generate = async () => {
+    if (!inputImagesB64.length) {
+      setError("최소 1개 이상의 이미지를 올려 주세요.");
+      return;
+    }
     const trimmed = prompt.trim();
     if (!trimmed) {
       setError("프롬프트를 입력해 주세요.");
@@ -88,9 +151,14 @@ export default function TabText2Image({ provider }) {
     }
     setLoading(true);
     setError("");
-    setImageB64("");
+    setOutputImageB64("");
     try {
-      const body = { prompt: trimmed, provider, model };
+      const body = {
+        prompt: trimmed,
+        provider,
+        model,
+        images: inputImagesB64,
+      };
       if (provider === "openai") {
         body.size = size;
         if (currentModelEntry?.qualities?.length) body.quality = quality;
@@ -98,34 +166,39 @@ export default function TabText2Image({ provider }) {
         body.aspectRatio = aspectRatio;
         body.imageSize = imageSize;
       }
-      const res = await fetch(`${API_BASE}/text2image`, {
+      const res = await fetch(`${API_BASE}/image2image`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "생성 실패");
-      if (data.data) setImageB64(data.data);
+      if (!res.ok) throw new Error(data.error || "변환 실패");
+      if (data.data) setOutputImageB64(data.data);
       else throw new Error("이미지 데이터 없음");
     } catch (err) {
-      setError(err.message || "이미지 생성 중 오류가 발생했습니다.");
+      setError(err.message || "이미지 변환 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
   const download = () => {
-    if (!imageB64) return;
+    if (!outputImageB64) return;
     const a = document.createElement("a");
-    a.href = `data:image/png;base64,${imageB64}`;
-    a.download = "generated.png";
+    a.href = `data:image/png;base64,${outputImageB64}`;
+    a.download = "image2image-output.png";
     a.click();
   };
 
+  const useOutputAsInput = () => {
+    if (!outputImageB64) return;
+    setInputImagesB64([outputImageB64]);
+  };
+
   return (
-    <div className="tab-text2image">
+    <div className="tab-image2image">
       <p className="tab-desc">
-        설명을 입력하면 선택한 API와 모델로 이미지를 생성합니다.
+        이미지를 여러 개 올리고 프롬프트를 입력하면, 선택한 API·모델로 새 이미지를 생성합니다.
       </p>
 
       <div className="model-row">
@@ -134,7 +207,7 @@ export default function TabText2Image({ provider }) {
           className="model-select"
           value={model}
           onChange={(e) => setModel(e.target.value)}
-          aria-label="이미지 생성 모델 선택"
+          aria-label="이미지 변환 모델 선택"
         >
           {(models[provider] || []).map((m) => (
             <option key={modelId(m)} value={modelId(m)}>
@@ -218,10 +291,51 @@ export default function TabText2Image({ provider }) {
         </>
       )}
 
+      <div className="upload-section">
+        <label className="upload-label">입력 이미지 (여러 개 선택 가능)</label>
+        <div
+          className={`upload-area ${isDragging ? "upload-area--dragging" : ""}`}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+        >
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={onFilesChange}
+            className="upload-input"
+            aria-label="이미지 파일 선택"
+          />
+          <span className="upload-hint">클릭하거나 파일을 끌어다 놓으세요</span>
+        </div>
+        {inputImagesB64.length > 0 && (
+          <div className="input-preview-list">
+            {inputImagesB64.map((b64, i) => (
+              <div key={i} className="input-preview-wrap">
+                <img
+                  src={`data:image/png;base64,${b64}`}
+                  alt={`입력 ${i + 1}`}
+                  className="input-preview-img"
+                />
+                <button
+                  type="button"
+                  className="input-preview-remove"
+                  onClick={() => removeInputImage(i)}
+                  aria-label={`입력 이미지 ${i + 1} 제거`}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       <div className="prompt-row">
         <textarea
           className="prompt-input"
-          placeholder="예: 달 위를 걷는 고양이, 수채화 스타일"
+          placeholder="예: 배경을 바다로 바꿔 주세요 / 이 스타일로 다시 그려 주세요"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           rows={3}
@@ -230,24 +344,29 @@ export default function TabText2Image({ provider }) {
           type="button"
           className="btn-primary"
           onClick={generate}
-          disabled={loading}
+          disabled={loading || inputImagesB64.length === 0}
         >
-          {loading ? "생성 중…" : "이미지 생성"}
+          {loading ? "변환 중…" : "이미지 변환"}
         </button>
       </div>
 
       {error && <div className="message error">{error}</div>}
 
-      {imageB64 && (
+      {outputImageB64 && (
         <div className="result-box">
           <img
-            src={`data:image/png;base64,${imageB64}`}
-            alt="Generated"
+            src={`data:image/png;base64,${outputImageB64}`}
+            alt="변환 결과"
             className="generated-image"
           />
-          <button type="button" className="btn-secondary" onClick={download}>
-            PNG 다운로드
-          </button>
+          <div className="result-actions">
+            <button type="button" className="btn-secondary" onClick={download}>
+              PNG 다운로드
+            </button>
+            <button type="button" className="btn-use-as-input" onClick={useOutputAsInput}>
+              출력 이미지를 입력으로 사용
+            </button>
+          </div>
         </div>
       )}
     </div>

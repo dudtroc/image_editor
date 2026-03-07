@@ -12,6 +12,18 @@ export default function TabResize() {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef(null);
 
+  const PRESET_SIZES = [
+    { label: "2016 × 1512", w: 2016, h: 1512 },
+    { label: "1024 × 1024", w: 1024, h: 1024 },
+    { label: "512 × 512", w: 512, h: 512 },
+    { label: "288 × 216", w: 288, h: 216 },
+  ];
+
+  const applyPreset = (w, h) => {
+    setWidth(String(w));
+    setHeight(String(h));
+  };
+
   const addFiles = (fileList) => {
     const chosen = Array.from(fileList || []);
     if (!chosen.length) return;
@@ -160,6 +172,21 @@ export default function TabResize() {
               className="size-input"
             />
           </label>
+        </div>
+        <div className="preset-sizes">
+          <span className="preset-label">자주 쓰는 사이즈</span>
+          <div className="preset-buttons">
+            {PRESET_SIZES.map(({ label, w, h }) => (
+              <button
+                key={label}
+                type="button"
+                className="preset-btn"
+                onClick={() => applyPreset(w, h)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
         <label className="checkbox-label">
           <input

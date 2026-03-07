@@ -1,0 +1,208 @@
+.tab-split-image .tab-desc {
+  color: var(--muted);
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+}
+
+.tab-split-image .split-options {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.tab-split-image .option-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.tab-split-image .option-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tab-split-image .option-label {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.tab-split-image .size-input {
+  width: 140px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.tab-split-image .size-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.tab-split-image .upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 40px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 24px;
+}
+
+.tab-split-image .upload-zone:hover,
+.tab-split-image .upload-zone.dragging {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.tab-split-image .upload-zone.dragging {
+  border-style: solid;
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.tab-split-image .upload-zone.has-file .upload-text {
+  color: var(--accent);
+}
+
+.tab-split-image .upload-input {
+  display: none;
+}
+
+.tab-split-image .upload-text {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.tab-split-image .upload-filename {
+  word-break: break-all;
+}
+
+.tab-split-image .split-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.tab-split-image .btn-primary {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  background: var(--accent);
+  color: white;
+}
+
+.tab-split-image .btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.tab-split-image .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tab-split-image .btn-clear {
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+.tab-split-image .btn-clear:hover {
+  color: var(--error);
+}
+
+.tab-split-image .message.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.tab-split-image .results-section {
+  margin-top: 28px;
+}
+
+.tab-split-image .results-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tab-split-image .results-section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.tab-split-image .btn-download-all {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  background: var(--accent);
+  color: white;
+  transition: background 0.2s;
+}
+
+.tab-split-image .btn-download-all:hover {
+  background: var(--accent-hover);
+}
+
+.tab-split-image .results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.tab-split-image .result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tab-split-image .result-filename {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.tab-split-image .result-preview {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+  background: repeating-conic-gradient(#2a2a30 0% 25%, #1a1a1e 0% 50%) 50% / 16px 16px;
+  border-radius: 8px;
+}
+
+.tab-split-image .btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-top: 8px;
+  width: 100%;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.tab-split-image .btn-secondary:hover {
+  background: var(--border);
+}

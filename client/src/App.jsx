@@ -4,12 +4,16 @@ import "./components/ApiSelector.css";
 import TabRemoveBg from "./components/TabRemoveBg";
 import TabResize from "./components/TabResize";
 import TabText2Image from "./components/TabText2Image";
+import TabImage2Image from "./components/TabImage2Image";
+import TabSplitImage from "./components/TabSplitImage";
 import "./App.css";
 
 const TABS = [
-  { id: "remove-bg", label: "배경 제거 (RGB → RGBA)" },
   { id: "text2image", label: "텍스트 → 이미지" },
+  { id: "image2image", label: "이미지 → 이미지" },
   { id: "resize", label: "이미지 리사이즈" },
+  { id: "split", label: "이미지 분할" },
+  { id: "remove-bg", label: "배경 제거 (RGB → RGBA)" },
 ];
 
 export default function App() {
@@ -42,8 +46,14 @@ export default function App() {
         {activeTab === "text2image" && (
           <TabText2Image provider={provider} />
         )}
+        {activeTab === "image2image" && (
+          <TabImage2Image provider={provider} />
+        )}
         {activeTab === "resize" && (
           <TabResize />
+        )}
+        {activeTab === "split" && (
+          <TabSplitImage />
         )}
       </main>
     </div>

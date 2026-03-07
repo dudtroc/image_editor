@@ -1,0 +1,218 @@
+.tab-image2image .tab-desc {
+  color: var(--muted);
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+}
+
+.tab-image2image .model-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tab-image2image .model-label {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  min-width: 48px;
+}
+
+.tab-image2image .model-select {
+  flex: 1;
+  max-width: 320px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.tab-image2image .model-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.upload-section {
+  margin-bottom: 20px;
+}
+
+.upload-label {
+  display: block;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.upload-area {
+  position: relative;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  background: var(--surface);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.upload-area:hover {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.upload-area.upload-area--dragging {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.12);
+  border-style: solid;
+}
+
+.upload-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+.input-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.input-preview-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.input-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.input-preview-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  color: #fff;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.input-preview-remove:hover {
+  background: rgba(200, 60, 60, 0.9);
+}
+
+.tab-image2image .prompt-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tab-image2image .prompt-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  resize: vertical;
+  min-height: 100px;
+}
+
+.tab-image2image .prompt-input::placeholder {
+  color: var(--muted);
+}
+
+.tab-image2image .prompt-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.tab-image2image .btn-primary {
+  padding: 12px 24px;
+  align-self: flex-start;
+}
+
+.tab-image2image .message.error {
+  margin-bottom: 20px;
+}
+
+.tab-image2image .result-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+}
+
+.tab-image2image .generated-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background: var(--bg);
+}
+
+.tab-image2image .result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.tab-image2image .btn-secondary {
+  padding: 10px 20px;
+}
+
+.tab-image2image .btn-use-as-input {
+  padding: 10px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.1s;
+}
+
+.tab-image2image .btn-use-as-input:hover {
+  filter: brightness(1.1);
+}
+
+.tab-image2image .btn-use-as-input:active {
+  transform: scale(0.98);
+}
