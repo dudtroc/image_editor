@@ -11,6 +11,7 @@ config({ path: path.resolve(__dirname, "..", ".env") });
 import removeBgRouter from "./routes/removeBg.js";
 import text2imageRouter from "./routes/text2image.js";
 import image2imageRouter from "./routes/image2image.js";
+import conceptAssetsRouter from "./routes/conceptAssets.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -21,6 +22,7 @@ app.use(express.json({ limit: "20mb" }));
 app.use("/api/remove-bg", removeBgRouter);
 app.use("/api/text2image", text2imageRouter);
 app.use("/api/image2image", image2imageRouter);
+app.use("/api/concept-assets", conceptAssetsRouter);
 
 app.get("/api/health", (_, res) => res.json({ ok: true }));
 

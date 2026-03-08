@@ -50,6 +50,19 @@
   color: white;
 }
 
+.tab.tab-disabled,
+.tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: var(--muted);
+}
+
+.tab.tab-disabled:hover,
+.tab:disabled:hover {
+  color: var(--muted);
+  background: transparent;
+}
+
 .main {
   min-height: 400px;
 }
