@@ -27,6 +27,44 @@ function fileToB64(file) {
   });
 }
 
+const CANVAS_SIZE = 1024;
+
+/**
+ * 1024x1024 캔버스에 배경색을 채운 뒤, 입력 이미지를 비율 유지하며 정중앙에 맞춰 그립니다.
+ * @param {File} file - 입력 이미지 파일
+ * @param {string} bgColor - hex 배경색 (예: "#ffffff")
+ * @returns {Promise<string>} base64 (data URL prefix 제외)
+ */
+function createCenteredImageB64(file, bgColor) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement("canvas");
+      canvas.width = CANVAS_SIZE;
+      canvas.height = CANVAS_SIZE;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      const scale = Math.min(CANVAS_SIZE / img.width, CANVAS_SIZE / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (CANVAS_SIZE - w) / 2;
+      const y = (CANVAS_SIZE - h) / 2;
+      ctx.drawImage(img, x, y, w, h);
+      const dataUrl = canvas.toDataURL("image/png");
+      const b64 = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
+      resolve(b64);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("이미지를 불러올 수 없습니다."));
+    };
+    img.src = url;
+  });
+}
+
 export default function TabStyleTransfer({ provider }) {
   const [inputFile, setInputFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -40,6 +78,8 @@ export default function TabStyleTransfer({ provider }) {
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [imageSize, setImageSize] = useState("1K");
   const [isDragging, setIsDragging] = useState(false);
+  const [placementMode, setPlacementMode] = useState("direct"); // "direct" | "center"
+  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -118,7 +158,10 @@ export default function TabStyleTransfer({ provider }) {
     setError("");
     setResultB64("");
     try {
-      const imageB64 = await fileToB64(inputFile);
+      const imageB64 =
+        placementMode === "center"
+          ? await createCenteredImageB64(inputFile, backgroundColor)
+          : await fileToB64(inputFile);
       const res = await fetch(`${API_BASE}/concept-assets/style-transfer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -244,6 +287,53 @@ export default function TabStyleTransfer({ provider }) {
             </div>
           )}
         </>
+      )}
+
+      <div className="model-row placement-mode-row">
+        <label className="model-label">입력 형태</label>
+        <div className="placement-options">
+          <label className="placement-option">
+            <input
+              type="radio"
+              name="placement"
+              value="direct"
+              checked={placementMode === "direct"}
+              onChange={() => setPlacementMode("direct")}
+            />
+            <span>바로 사용</span>
+          </label>
+          <label className="placement-option">
+            <input
+              type="radio"
+              name="placement"
+              value="center"
+              checked={placementMode === "center"}
+              onChange={() => setPlacementMode("center")}
+            />
+            <span>중앙 배치</span>
+          </label>
+        </div>
+      </div>
+      {placementMode === "center" && (
+        <div className="model-row placement-color-row">
+          <label className="model-label">배경 색상</label>
+          <div className="color-input-wrap">
+            <input
+              type="color"
+              className="color-swatch"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              aria-label="배경 색상 선택"
+            />
+            <input
+              type="text"
+              className="color-hex"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              aria-label="배경 색상 (hex)"
+            />
+          </div>
+        </div>
       )}
 
       <section className="section">

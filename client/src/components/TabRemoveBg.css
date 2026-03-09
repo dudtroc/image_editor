@@ -4,6 +4,88 @@
   font-size: 0.95rem;
 }
 
+.tab-remove-bg .option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tab-remove-bg .option-label {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  min-width: 72px;
+}
+
+.tab-remove-bg .option-select {
+  flex: 1;
+  max-width: 200px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.tab-remove-bg .option-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.tab-remove-bg .placement-options {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.tab-remove-bg .placement-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.tab-remove-bg .placement-option input {
+  accent-color: var(--accent);
+}
+
+.tab-remove-bg .color-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tab-remove-bg .color-swatch {
+  width: 40px;
+  height: 40px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--surface);
+}
+
+.tab-remove-bg .color-hex {
+  width: 88px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.tab-remove-bg .color-hex:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 .upload-zone {
   border: 2px dashed var(--border);
   border-radius: 12px;

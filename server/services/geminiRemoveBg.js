@@ -20,7 +20,7 @@ export async function removeBackgroundGemini(imageBuffer, apiKey) {
             },
           },
           {
-            text: "Remove the background of this image only. Keep the main subject and its natural shadow; do not remove or erase the subject's shadow. Output a single image as PNG with transparent background. Do not add any text or watermark.",
+            text: "Remove the background of this image only. Do NOT change the composition, layout, framing, or crop. Do NOT change the art style, colors, lighting, textures, or any visual style of the subject. Preserve the subject exactly as it appears—only make the background transparent. Keep the subject's natural shadow; do not remove it. Output a single image as PNG with transparent background. Do not add any text or watermark.",
           },
         ],
       },

@@ -34,6 +34,66 @@
   border-color: var(--accent);
 }
 
+.tab-style-transfer .model-row.placement-mode-row .model-label {
+  min-width: 72px;
+}
+
+.tab-style-transfer .placement-options {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.tab-style-transfer .placement-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.tab-style-transfer .placement-option input {
+  accent-color: var(--accent);
+}
+
+.tab-style-transfer .placement-color-row {
+  margin-left: 0;
+}
+
+.tab-style-transfer .color-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tab-style-transfer .color-swatch {
+  width: 40px;
+  height: 40px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--surface);
+}
+
+.tab-style-transfer .color-hex {
+  width: 88px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.tab-style-transfer .color-hex:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 .tab-style-transfer .section {
   margin-bottom: 28px;
 }

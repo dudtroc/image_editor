@@ -7,13 +7,23 @@ function getMime(buffer) {
   return "image/png";
 }
 
-export async function removeBackgroundOpenAI(imageBuffer, apiKey) {
+/**
+ * @param {Buffer} imageBuffer
+ * @param {string} apiKey
+ * @param {{ quality?: string }} opts - quality: "low" | "medium" | "high" | "auto" (GPT Image only)
+ */
+export async function removeBackgroundOpenAI(imageBuffer, apiKey, opts = {}) {
   const form = new FormData();
   form.append("model", MODEL);
   form.append("image", new Blob([imageBuffer], { type: getMime(imageBuffer) }), "image.png");
-  form.append("prompt", "Remove the background only. Keep the main subject and its natural shadow intact; do not remove the subject's shadow. Output as PNG with transparent background.");
+  form.append(
+    "prompt",
+    "Remove the background only. Do NOT change the composition, layout, framing, or crop of the image. Do NOT change the art style, colors, lighting, textures, or any visual style of the subject. Preserve the main subject exactly as it appears—only make the background transparent. Keep the subject's natural shadow intact; do not remove the subject's shadow. Output as PNG with transparent background."
+  );
   form.append("background", "transparent");
   form.append("output_format", "png");
+  const quality = opts.quality && ["low", "medium", "high", "auto"].includes(opts.quality) ? opts.quality : "auto";
+  form.append("quality", quality);
 
   const res = await fetch("https://api.openai.com/v1/images/edits", {
     method: "POST",

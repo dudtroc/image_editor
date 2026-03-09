@@ -17,6 +17,7 @@ const upload = multer({
 router.post("/", upload.array("images", 16), async (req, res) => {
   try {
     const provider = (req.body.provider || "openai").toLowerCase();
+    const quality = req.body.quality || "auto"; // OpenAI only: low | medium | high | auto
     const files = req.files || [];
 
     if (!files.length) {
@@ -37,7 +38,7 @@ router.post("/", upload.array("images", 16), async (req, res) => {
 
     const processOne = provider === "gemini"
       ? (buffer) => removeBackgroundGemini(buffer, apiKey)
-      : (buffer) => removeBackgroundOpenAI(buffer, apiKey);
+      : (buffer) => removeBackgroundOpenAI(buffer, apiKey, { quality });
 
     const results = await Promise.all(
       files.map(async (file) => {

@@ -2,6 +2,47 @@ import { useState, useRef } from "react";
 import "./TabRemoveBg.css";
 
 const API_BASE = "/api";
+const CANVAS_SIZE = 1024;
+
+/**
+ * 1024x1024 캔버스에 배경색을 채운 뒤, 입력 이미지를 비율 유지하며 정중앙에 맞춰 그립니다.
+ * @param {File} file - 입력 이미지 파일
+ * @param {string} bgColor - hex 배경색 (예: "#ffffff")
+ * @returns {Promise<File>} PNG File (원본 filename 기반)
+ */
+function createCenteredImageFile(file, bgColor) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement("canvas");
+      canvas.width = CANVAS_SIZE;
+      canvas.height = CANVAS_SIZE;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      const scale = Math.min(CANVAS_SIZE / img.width, CANVAS_SIZE / img.height);
+      const w = img.width * scale;
+      const h = img.height * scale;
+      const x = (CANVAS_SIZE - w) / 2;
+      const y = (CANVAS_SIZE - h) / 2;
+      ctx.drawImage(img, x, y, w, h);
+      canvas.toBlob(
+        (blob) => {
+          const name = (file.name || "image").replace(/\.[^.]+$/, "") + ".png";
+          resolve(new File([blob], name, { type: "image/png" }));
+        },
+        "image/png"
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("이미지를 불러올 수 없습니다."));
+    };
+    img.src = url;
+  });
+}
 
 export default function TabRemoveBg({ provider }) {
   const [files, setFiles] = useState([]);
@@ -9,7 +50,17 @@ export default function TabRemoveBg({ provider }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [placementMode, setPlacementMode] = useState("direct"); // "direct" | "center"
+  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [quality, setQuality] = useState("auto"); // OpenAI: low | medium | high | auto
   const inputRef = useRef(null);
+
+  const QUALITY_OPTIONS = [
+    { value: "auto", label: "자동" },
+    { value: "high", label: "고품질" },
+    { value: "medium", label: "중간" },
+    { value: "low", label: "저품질" },
+  ];
 
   const addFiles = (fileList) => {
     const chosen = Array.from(fileList || []);
@@ -56,9 +107,14 @@ export default function TabRemoveBg({ provider }) {
     setError("");
     setResults([]);
     try {
+      const filesToSend =
+        placementMode === "center"
+          ? await Promise.all(files.map((f) => createCenteredImageFile(f, backgroundColor)))
+          : files;
       const form = new FormData();
       form.append("provider", provider);
-      files.forEach((f) => form.append("images", f));
+      if (provider === "openai") form.append("quality", quality);
+      filesToSend.forEach((f) => form.append("images", f));
       const res = await fetch(`${API_BASE}/remove-bg`, {
         method: "POST",
         body: form,
@@ -93,6 +149,71 @@ export default function TabRemoveBg({ provider }) {
       <p className="tab-desc">
         RGB 이미지를 업로드하면 RGBA(투명 배경) PNG로 변환합니다. 여러 장 동시 업로드 가능 (최대 16장).
       </p>
+
+      <div className="option-row placement-mode-row">
+        <label className="option-label">입력 형태</label>
+        <div className="placement-options">
+          <label className="placement-option">
+            <input
+              type="radio"
+              name="placement"
+              value="direct"
+              checked={placementMode === "direct"}
+              onChange={() => setPlacementMode("direct")}
+            />
+            <span>바로 사용</span>
+          </label>
+          <label className="placement-option">
+            <input
+              type="radio"
+              name="placement"
+              value="center"
+              checked={placementMode === "center"}
+              onChange={() => setPlacementMode("center")}
+            />
+            <span>중앙 배치</span>
+          </label>
+        </div>
+      </div>
+      {placementMode === "center" && (
+        <div className="option-row placement-color-row">
+          <label className="option-label">배경 색상</label>
+          <div className="color-input-wrap">
+            <input
+              type="color"
+              className="color-swatch"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              aria-label="배경 색상 선택"
+            />
+            <input
+              type="text"
+              className="color-hex"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              aria-label="배경 색상 (hex)"
+            />
+          </div>
+        </div>
+      )}
+
+      {provider === "openai" && (
+        <div className="option-row">
+          <label className="option-label">품질</label>
+          <select
+            className="option-select"
+            value={quality}
+            onChange={(e) => setQuality(e.target.value)}
+            aria-label="품질 선택"
+          >
+            {QUALITY_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div
         className={`upload-zone ${isDragging ? "dragging" : ""}`}
