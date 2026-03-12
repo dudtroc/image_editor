@@ -9,6 +9,7 @@ export default function ApiSelector({ value, onChange }) {
       >
         <option value="openai">OpenAI</option>
         <option value="gemini">Gemini</option>
+        <option value="triton">Triton (로컬)</option>
       </select>
     </div>
   );

@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import { removeBackgroundOpenAI } from "../services/openaiRemoveBg.js";
 import { removeBackgroundGemini } from "../services/geminiRemoveBg.js";
+import { removeBackgroundTriton } from "../services/tritonRemoveBg.js";
 
 const router = express.Router();
 const upload = multer({
@@ -24,21 +25,27 @@ router.post("/", upload.array("images", 16), async (req, res) => {
       return res.status(400).json({ error: "No images uploaded." });
     }
 
-    const apiKey = provider === "gemini"
-      ? process.env.GEMINI_API_KEY
-      : process.env.OPEN_AI_API_KEY;
+    let processOne;
 
-    if (!apiKey) {
-      return res.status(400).json({
-        error: provider === "gemini"
-          ? "GEMINI_API_KEY is not set in .env"
-          : "OPEN_AI_API_KEY is not set in .env",
-      });
+    if (provider === "triton") {
+      processOne = (buffer) => removeBackgroundTriton(buffer);
+    } else {
+      const apiKey = provider === "gemini"
+        ? process.env.GEMINI_API_KEY
+        : process.env.OPEN_AI_API_KEY;
+
+      if (!apiKey) {
+        return res.status(400).json({
+          error: provider === "gemini"
+            ? "GEMINI_API_KEY is not set in .env"
+            : "OPEN_AI_API_KEY is not set in .env",
+        });
+      }
+
+      processOne = provider === "gemini"
+        ? (buffer) => removeBackgroundGemini(buffer, apiKey)
+        : (buffer) => removeBackgroundOpenAI(buffer, apiKey, { quality });
     }
-
-    const processOne = provider === "gemini"
-      ? (buffer) => removeBackgroundGemini(buffer, apiKey)
-      : (buffer) => removeBackgroundOpenAI(buffer, apiKey, { quality });
 
     const results = await Promise.all(
       files.map(async (file) => {

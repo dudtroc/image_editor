@@ -8,7 +8,7 @@ cd "$SCRIPT_DIR"
 cleanup() {
   echo ""
   echo "종료 중..."
-  kill $SERVER_PID $CLIENT_PID 2>/dev/null
+  kill $SERVER_PID $CLIENT_PID $TRITON_BRIDGE_PID 2>/dev/null
   exit 0
 }
 
@@ -24,8 +24,13 @@ cd client && npm run dev &
 CLIENT_PID=$!
 cd "$SCRIPT_DIR"
 
+echo "Triton 브릿지 시작 중... (server/triton_bridge/)"
+cd server/triton_bridge && pip install -q -r requirements.txt && python main.py &
+TRITON_BRIDGE_PID=$!
+cd "$SCRIPT_DIR"
+
 echo ""
-echo "서버 PID: $SERVER_PID | 클라이언트 PID: $CLIENT_PID"
+echo "서버 PID: $SERVER_PID | 클라이언트 PID: $CLIENT_PID | Triton 브릿지 PID: $TRITON_BRIDGE_PID"
 echo "종료하려면 Ctrl+C 를 누르세요."
 echo ""
 
