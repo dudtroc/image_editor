@@ -1,3 +1,5 @@
+# Triton 브릿지: Python 3.11 또는 3.12 사용 권장.
+# Python 3.14는 grpcio 전처리 휠이 없어 Windows에서 빌드 실패할 수 있음.
 fastapi
 uvicorn
 Pillow

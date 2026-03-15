@@ -1,0 +1,344 @@
+.tab-video-work .tab-desc {
+  color: var(--muted);
+  margin: 0 0 24px;
+  font-size: 0.95rem;
+}
+
+.tab-video-work .section-label {
+  display: block;
+  color: var(--text);
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.tab-video-work .video-section,
+.tab-video-work .crop-section,
+.tab-video-work .download-section {
+  margin-bottom: 28px;
+}
+
+.tab-video-work .upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-video-work .upload-zone:hover,
+.tab-video-work .upload-zone.dragging {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.tab-video-work .upload-input {
+  display: none;
+}
+
+.tab-video-work .upload-text {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.tab-video-work .video-preview-wrap {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.tab-video-work .video-preview {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  border-radius: 8px;
+  background: #1a1a1e;
+}
+
+.tab-video-work .frame-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.tab-video-work .frame-options label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.tab-video-work .frame-options input {
+  width: 80px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.tab-video-work .frame-interval-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.tab-video-work .frame-interval-label {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-right: 4px;
+}
+
+.tab-video-work .frame-interval-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.tab-video-work .btn-interval {
+  min-width: 44px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.tab-video-work .btn-interval:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tab-video-work .btn-interval.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.tab-video-work .frame-interval-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.tab-video-work .frame-interval-custom input {
+  width: 64px;
+}
+
+.tab-video-work .removebg-section {
+  margin-bottom: 28px;
+}
+
+.tab-video-work .removebg-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+.tab-video-work .download-fps-row {
+  margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.tab-video-work .fps-label {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.tab-video-work .fps-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.tab-video-work .btn-fps {
+  min-width: 44px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.tab-video-work .btn-fps:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tab-video-work .btn-fps.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.tab-video-work .download-fps-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.tab-video-work .download-fps-row input {
+  width: 80px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.tab-video-work .crop-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.tab-video-work .crop-options label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.tab-video-work .crop-options input[type="number"] {
+  width: 90px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.tab-video-work .checkbox-label {
+  flex-direction: row;
+  align-items: center;
+}
+
+.tab-video-work .crop-hint,
+.tab-video-work .download-hint {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.tab-video-work .download-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.tab-video-work .btn-primary {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tab-video-work .btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.tab-video-work .btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.tab-video-work .btn-secondary {
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.tab-video-work .btn-secondary:hover:not(:disabled) {
+  background: var(--border);
+  border-color: var(--accent);
+}
+
+.tab-video-work .message.error {
+  margin-top: 12px;
+  color: var(--error);
+}
+
+.tab-video-work .frames-preview {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.tab-video-work .results-title {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+}
+
+.tab-video-work .frames-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.tab-video-work .frame-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tab-video-work .frame-preview {
+  width: 100%;
+  aspect-ratio: 16/10;
+  object-fit: cover;
+  display: block;
+}
+
+.tab-video-work .frame-num {
+  display: block;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.tab-video-work .frames-more {
+  margin: 12px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}

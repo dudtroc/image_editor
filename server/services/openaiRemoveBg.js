@@ -18,7 +18,16 @@ export async function removeBackgroundOpenAI(imageBuffer, apiKey, opts = {}) {
   form.append("image", new Blob([imageBuffer], { type: getMime(imageBuffer) }), "image.png");
   form.append(
     "prompt",
-    "Remove the background only. Do NOT change the composition, layout, framing, or crop of the image. Do NOT change the art style, colors, lighting, textures, or any visual style of the subject. Preserve the main subject exactly as it appears—only make the background transparent. Keep the subject's natural shadow intact; do not remove the subject's shadow. Output as PNG with transparent background."
+    `CRITICAL: The ONLY change allowed is making the background transparent. You must NOT change the subject in any way.
+
+STRICT RULES—do not violate:
+- Do NOT change the shape, form, silhouette, or proportions of any object. Every object must look exactly the same as in the input.
+- Do NOT change the image style: no redrawing, no style transfer, no changing colors/contrast/line weight. The subject must look identical to the input.
+- Do NOT change composition, layout, framing, or crop. Do NOT add or remove any detail.
+
+Preserve exactly: (a) Line work—bold, clean black outlines; consistent line weight; no rough or wobbly lines. (b) Shading and volume—existing cel-shading; clear highlight/shadow boundaries; at least three tones (highlight, mid-tone, shadow). (c) Shadows: render all shadows in neutral gray tones (grayscale); do not use colored shadows—keep shadow color consistent as gray so it does not change between runs.
+
+Output: same subject pixel-for-pixel, only background removed. PNG with transparent background.`
   );
   form.append("background", "transparent");
   form.append("output_format", "png");

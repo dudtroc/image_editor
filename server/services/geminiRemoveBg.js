@@ -20,7 +20,16 @@ export async function removeBackgroundGemini(imageBuffer, apiKey) {
             },
           },
           {
-            text: "Remove the background of this image only. Do NOT change the composition, layout, framing, or crop. Do NOT change the art style, colors, lighting, textures, or any visual style of the subject. Preserve the subject exactly as it appears—only make the background transparent. Keep the subject's natural shadow; do not remove it. Output a single image as PNG with transparent background. Do not add any text or watermark.",
+            text: `CRITICAL: The ONLY change allowed is making the background transparent. You must NOT change the subject in any way.
+
+STRICT RULES—do not violate:
+- Do NOT change the shape, form, silhouette, or proportions of any object. Every object must look exactly the same as in the input.
+- Do NOT change the image style: no redrawing, no style transfer, no changing colors/contrast/line weight. The subject must look identical to the input.
+- Do NOT change composition, layout, framing, or crop. Do NOT add or remove any detail.
+
+Preserve exactly: (a) Line work—bold, clean black outlines; consistent line weight; no rough or wobbly lines. (b) Shading and volume—existing cel-shading; clear highlight/shadow boundaries; at least three tones (highlight, mid-tone, shadow). (c) Shadows: render all shadows in neutral gray tones (grayscale); do not use colored shadows—keep shadow color consistent as gray so it does not change between runs.
+
+Output: same subject pixel-for-pixel, only background removed. Single image as PNG with transparent background. No text or watermark.`,
           },
         ],
       },

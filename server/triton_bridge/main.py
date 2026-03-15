@@ -17,8 +17,18 @@ import logging
 # 환경변수 또는 기본 경로 (Linux/Windows 모두 지원)
 TRITON_PROJECT_PATH = os.environ.get(
     "TRITON_PROJECT_PATH",
-    os.path.join(os.path.expanduser("~"), "PROJECT", "media", "media_graph_triton")
+    os.path.join(os.path.expanduser("~"), "PROJECT", "media_graph_triton")
 )
+TRITON_PROJECT_PATH = os.path.abspath(TRITON_PROJECT_PATH)
+src_dir = os.path.join(TRITON_PROJECT_PATH, "src")
+if not os.path.isdir(src_dir):
+    print("오류: media_graph_triton 프로젝트를 찾을 수 없습니다.")
+    print(f"  기대 경로: {TRITON_PROJECT_PATH}")
+    print("  해당 경로에 media_graph_triton 저장소가 있어야 하며, 그 안에 src/ 폴더가 있어야 합니다.")
+    print("  다른 경로에 있다면 환경 변수를 설정하세요:")
+    print("    set TRITON_PROJECT_PATH=C:\\경로\\media_graph_triton   (CMD)")
+    print("    $env:TRITON_PROJECT_PATH=\"C:\\경로\\media_graph_triton\"   (PowerShell)")
+    sys.exit(1)
 sys.path.insert(0, TRITON_PROJECT_PATH)
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Query

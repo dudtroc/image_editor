@@ -103,6 +103,53 @@
   margin-bottom: 8px;
 }
 
+.tab-crop-to-asset .crop-by-points {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.tab-crop-to-asset .crop-by-points-label {
+  width: 100%;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.tab-crop-to-asset .crop-by-points-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.tab-crop-to-asset .crop-by-points-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.tab-crop-to-asset .crop-by-points-inputs input {
+  width: 72px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.tab-crop-to-asset .crop-by-points-inputs input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
 .tab-crop-to-asset .btn-secondary {
   padding: 10px 18px;
   border-radius: 10px;

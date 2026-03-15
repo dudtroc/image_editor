@@ -13,10 +13,18 @@ export async function removeBackgroundTriton(imageBuffer) {
     "image.png"
   );
 
-  const res = await fetch(`${TRITON_BRIDGE_URL}/remove-bg`, {
-    method: "POST",
-    body: form,
-  });
+  let res;
+  try {
+    res = await fetch(`${TRITON_BRIDGE_URL}/remove-bg`, {
+      method: "POST",
+      body: form,
+    });
+  } catch (err) {
+    const msg = err.cause?.code === "ECONNREFUSED" || err.message === "fetch failed"
+      ? `Triton 브릿지에 연결할 수 없습니다. ${TRITON_BRIDGE_URL} 이 실행 중인지 확인하세요. (run-all.ps1의 Triton 브릿지 창을 켜 두세요.)`
+      : (err.message || "Triton 브릿지 요청 실패");
+    throw new Error(msg);
+  }
 
   if (!res.ok) {
     const err = await res.text();

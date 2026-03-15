@@ -73,6 +73,9 @@ export default function TabCropToAsset({ provider }) {
   const [crops, setCrops] = useState([]);
   const [cropError, setCropError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  /** 좌표 입력 크롭: 좌상단(x1,y1), 우하단(x2,y2) - 이미지 픽셀 기준 */
+  const [pointTopLeft, setPointTopLeft] = useState({ x: "", y: "" });
+  const [pointBottomRight, setPointBottomRight] = useState({ x: "", y: "" });
   const inputRef = useRef(null);
   const imgRef = useRef(null);
   const containerRef = useRef(null);
@@ -88,6 +91,8 @@ export default function TabCropToAsset({ provider }) {
     setCropBox(null);
     setDragState(null);
     setCropError("");
+    setPointTopLeft({ x: "", y: "" });
+    setPointBottomRight({ x: "", y: "" });
   }, [conceptPreviewUrl]);
 
   /** 이미지 로드 시 기본 박스 표시 (중앙 70% 영역) */
@@ -246,6 +251,43 @@ export default function TabCropToAsset({ provider }) {
     ]);
   }, [getSelectionRect]);
 
+  /** 좌상단·우하단 좌표(이미지 픽셀)로 크롭 */
+  const addCropByPoints = useCallback(() => {
+    const img = imgRef.current;
+    if (!img || !img.complete) {
+      setCropError("이미지가 아직 로드되지 않았습니다.");
+      return;
+    }
+    const nw = img.naturalWidth;
+    const nh = img.naturalHeight;
+    const x1 = Number(pointTopLeft.x);
+    const y1 = Number(pointTopLeft.y);
+    const x2 = Number(pointBottomRight.x);
+    const y2 = Number(pointBottomRight.y);
+    if (Number.isNaN(x1) || Number.isNaN(y1) || Number.isNaN(x2) || Number.isNaN(y2)) {
+      setCropError("좌상단·우하단 좌표를 모두 숫자로 입력해 주세요.");
+      return;
+    }
+    const left = Math.max(0, Math.min(x1, x2));
+    const top = Math.max(0, Math.min(y1, y2));
+    let w = Math.abs(x2 - x1);
+    let h = Math.abs(y2 - y1);
+    if (left + w > nw) w = nw - left;
+    if (top + h > nh) h = nh - top;
+    if (w < 5 || h < 5) {
+      setCropError("영역이 너무 작습니다. 좌상단과 우하단이 충분히 떨어져 있어야 합니다.");
+      return;
+    }
+    setCropError("");
+    const dataUrl = cropImageToDataUrl(img, left, top, w, h);
+    const b64 = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
+    const id = nextIdRef.current++;
+    setCrops((prev) => [
+      ...prev,
+      { id, name: `에셋_${id}`, dataUrl, data: b64, rgba: null, rgbaLoading: false, rgbaError: null },
+    ]);
+  }, [pointTopLeft, pointBottomRight]);
+
   const removeCrop = useCallback((id) => {
     setCrops((prev) => prev.filter((c) => c.id !== id));
   }, []);
@@ -394,6 +436,58 @@ export default function TabCropToAsset({ provider }) {
                 disabled={!hasValidSelection}
               >
                 선택 영역 크롭
+              </button>
+            </div>
+            <div className="crop-by-points">
+              <span className="crop-by-points-label">좌표로 크롭 (이미지 픽셀)</span>
+              <div className="crop-by-points-inputs">
+                <label>
+                  좌상단 X
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    value={pointTopLeft.x}
+                    onChange={(e) => setPointTopLeft((p) => ({ ...p, x: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  좌상단 Y
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    value={pointTopLeft.y}
+                    onChange={(e) => setPointTopLeft((p) => ({ ...p, y: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  우하단 X
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    value={pointBottomRight.x}
+                    onChange={(e) => setPointBottomRight((p) => ({ ...p, x: e.target.value }))}
+                  />
+                </label>
+                <label>
+                  우하단 Y
+                  <input
+                    type="number"
+                    min={0}
+                    placeholder="0"
+                    value={pointBottomRight.y}
+                    onChange={(e) => setPointBottomRight((p) => ({ ...p, y: e.target.value }))}
+                  />
+                </label>
+              </div>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={addCropByPoints}
+              >
+                좌표로 크롭
               </button>
             </div>
             {cropError && <div className="message error">{cropError}</div>}

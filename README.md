@@ -9,6 +9,9 @@ API는 **OpenAI**와 **Gemini** 중 선택해 사용할 수 있습니다.
 
 - `OPEN_AI_API_KEY` — OpenAI API 키 (배경 제거·DALL·E 3 사용)
 - `GEMINI_API_KEY` — Google Gemini API 키 (배경 제거·이미지 생성 사용)
+- `FFMPEG_PATH` — (선택) 동영상 작업 탭에서 "동영상(MP4)으로 저장" 시 사용. ffmpeg 실행 파일 전체 경로.  
+  예: `FFMPEG_PATH=C:\ffmpeg\bin\ffmpeg.exe` (Windows), `FFMPEG_PATH=/usr/bin/ffmpeg` (Linux/Mac).  
+  설정하지 않으면 시스템 PATH에 있는 `ffmpeg`를 사용합니다. [ffmpeg 다운로드](https://ffmpeg.org/download.html)
 
 실행 시 이 키들이 서버에서 읽혀 API 호출에 사용됩니다.
 

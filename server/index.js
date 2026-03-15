@@ -12,6 +12,7 @@ import removeBgRouter from "./routes/removeBg.js";
 import text2imageRouter from "./routes/text2image.js";
 import image2imageRouter from "./routes/image2image.js";
 import conceptAssetsRouter from "./routes/conceptAssets.js";
+import videoRouter from "./routes/video.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -23,6 +24,7 @@ app.use("/api/remove-bg", removeBgRouter);
 app.use("/api/text2image", text2imageRouter);
 app.use("/api/image2image", image2imageRouter);
 app.use("/api/concept-assets", conceptAssetsRouter);
+app.use("/api/video", videoRouter);
 
 app.get("/api/health", (_, res) => res.json({ ok: true }));
 
