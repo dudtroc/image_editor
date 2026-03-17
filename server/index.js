@@ -13,6 +13,7 @@ import text2imageRouter from "./routes/text2image.js";
 import image2imageRouter from "./routes/image2image.js";
 import conceptAssetsRouter from "./routes/conceptAssets.js";
 import videoRouter from "./routes/video.js";
+import veoGenerateRouter from "./routes/veoGenerate.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -25,6 +26,7 @@ app.use("/api/text2image", text2imageRouter);
 app.use("/api/image2image", image2imageRouter);
 app.use("/api/concept-assets", conceptAssetsRouter);
 app.use("/api/video", videoRouter);
+app.use("/api/veo", veoGenerateRouter);
 
 app.get("/api/health", (_, res) => res.json({ ok: true }));
 

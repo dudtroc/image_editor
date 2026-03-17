@@ -11,12 +11,14 @@ import TabConceptAssets from "./components/TabConceptAssets";
 import TabStyleTransfer from "./components/TabStyleTransfer";
 import TabCropToAsset from "./components/TabCropToAsset";
 import TabVideoWork from "./components/TabVideoWork";
+import TabVeoGenerate from "./components/TabVeoGenerate";
 import "./App.css";
 
 const TABS = [
   { id: "concept-assets", label: "컨셉 → 에셋" },
   { id: "crop-to-asset", label: "크롭 → 에셋" },
   { id: "video-work", label: "동영상 작업" },
+  { id: "veo-generate", label: "동영상 생성 (Veo)" },
   { id: "style-transfer", label: "스타일 변환" },
   { id: "text2image", label: "텍스트 → 이미지", disabled: true },
   { id: "image2image", label: "이미지 → 이미지", disabled: true },
@@ -63,6 +65,9 @@ export default function App() {
         )}
         {effectiveTab === "video-work" && (
           <TabVideoWork provider={provider} />
+        )}
+        {effectiveTab === "veo-generate" && (
+          <TabVeoGenerate />
         )}
         {effectiveTab === "style-transfer" && (
           <TabStyleTransfer provider={provider} />
