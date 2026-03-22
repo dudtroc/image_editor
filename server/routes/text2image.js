@@ -16,7 +16,7 @@ router.get("/models", (_req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { prompt, provider = "openai", model, size, quality, aspectRatio, imageSize } = req.body;
+    const { prompt, provider = "openai", model, size, quality, aspectRatio, imageSize, referenceImages } = req.body;
     const prov = String(provider).toLowerCase();
 
     if (!prompt || !prompt.trim()) {
@@ -35,8 +35,14 @@ router.post("/", async (req, res) => {
       });
     }
 
+    const refList = Array.isArray(referenceImages)
+      ? referenceImages.filter((x) => typeof x === "string" && x.trim())
+      : [];
+    const geminiOpts = { aspectRatio, imageSize };
+    if (refList.length) geminiOpts.referenceImagesB64 = refList;
+
     const generate = prov === "gemini"
-      ? () => generateImageGemini(prompt.trim(), apiKey, model, { aspectRatio, imageSize })
+      ? () => generateImageGemini(prompt.trim(), apiKey, model, geminiOpts)
       : () => generateImageOpenAI(prompt.trim(), apiKey, model, { size, quality });
 
     const b64 = await generate();

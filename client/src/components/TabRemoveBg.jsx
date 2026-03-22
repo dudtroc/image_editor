@@ -2,10 +2,10 @@ import { useState, useRef } from "react";
 import "./TabRemoveBg.css";
 
 const API_BASE = "/api";
-const CANVAS_SIZE = 1024;
 
 /**
- * 1024x1024 캔버스에 배경색을 채운 뒤, 입력 이미지를 비율 유지하며 정중앙에 맞춰 그립니다.
+ * 입력 이미지와 동일한 해상도의 캔버스에 배경색을 채운 뒤, 원본 픽셀 크기 그대로(리사이즈 없이) 그립니다.
+ * 투명 영역이 있으면 선택한 배경색이 보입니다.
  * @param {File} file - 입력 이미지 파일
  * @param {string} bgColor - hex 배경색 (예: "#ffffff")
  * @returns {Promise<File>} PNG File (원본 filename 기반)
@@ -16,18 +16,15 @@ function createCenteredImageFile(file, bgColor) {
     const url = URL.createObjectURL(file);
     img.onload = () => {
       URL.revokeObjectURL(url);
+      const w = img.naturalWidth;
+      const h = img.naturalHeight;
       const canvas = document.createElement("canvas");
-      canvas.width = CANVAS_SIZE;
-      canvas.height = CANVAS_SIZE;
+      canvas.width = w;
+      canvas.height = h;
       const ctx = canvas.getContext("2d");
       ctx.fillStyle = bgColor;
-      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-      const scale = Math.min(CANVAS_SIZE / img.width, CANVAS_SIZE / img.height);
-      const w = img.width * scale;
-      const h = img.height * scale;
-      const x = (CANVAS_SIZE - w) / 2;
-      const y = (CANVAS_SIZE - h) / 2;
-      ctx.drawImage(img, x, y, w, h);
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0);
       canvas.toBlob(
         (blob) => {
           const name = (file.name || "image").replace(/\.[^.]+$/, "") + ".png";

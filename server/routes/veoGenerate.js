@@ -1,10 +1,16 @@
 import express from "express";
 import multer from "multer";
 import { generateVeoVideo } from "../services/veoGenerate.js";
+import { GEMINI_VEO_VIDEO_MODELS } from "../services/geminiVideoModels.js";
 
 const router = express.Router();
 
 const VALID_DURATIONS = [4, 6, 8];
+
+/** GET /api/veo/models — Gemini(Veo) 동영상 모델·해상도·비율 메타데이터 */
+router.get("/models", (_req, res) => {
+  res.json({ models: GEMINI_VEO_VIDEO_MODELS });
+});
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -31,24 +37,27 @@ router.post(
       return res.status(500).json({ error: "GEMINI_API_KEY가 설정되지 않았습니다." });
     }
 
-    const { model, durationSeconds, subject, animationDesc } = req.body;
+    const { model, durationSeconds, subject, animationDesc, aspectRatio, resolution, prompt } = req.body;
     const startFrameFile = req.files?.startFrame?.[0];
     const endFrameFile = req.files?.endFrame?.[0];
 
     if (!startFrameFile) {
       return res.status(400).json({ error: "시작 프레임 이미지가 없습니다." });
     }
-    if (!endFrameFile) {
-      return res.status(400).json({ error: "끝 프레임 이미지가 없습니다." });
-    }
     if (!model) {
       return res.status(400).json({ error: "모델을 선택해주세요." });
     }
-    if (!subject?.trim()) {
-      return res.status(400).json({ error: "피사체(input1)를 입력해주세요." });
-    }
-    if (!animationDesc?.trim()) {
-      return res.status(400).json({ error: "애니메이션 상세 설명(input2)을 입력해주세요." });
+
+    const customPrompt = typeof prompt === "string" ? prompt.trim() : "";
+    if (customPrompt) {
+      // Gemini 동영상 탭: 프롬프트만 사용자 입력 그대로 사용
+    } else {
+      if (!subject?.trim()) {
+        return res.status(400).json({ error: "피사체(input1)를 입력해주세요." });
+      }
+      if (!animationDesc?.trim()) {
+        return res.status(400).json({ error: "애니메이션 상세 설명(input2)를 입력해주세요." });
+      }
     }
 
     const duration = VALID_DURATIONS.includes(Number(durationSeconds))
@@ -60,12 +69,15 @@ router.post(
         apiKey,
         model,
         durationSeconds: duration,
-        subject: subject.trim(),
-        animationDesc: animationDesc.trim(),
+        subject: subject?.trim(),
+        animationDesc: animationDesc?.trim(),
+        prompt: customPrompt || undefined,
         startFrameBase64: startFrameFile.buffer.toString("base64"),
-        endFrameBase64: endFrameFile.buffer.toString("base64"),
+        endFrameBase64: endFrameFile ? endFrameFile.buffer.toString("base64") : undefined,
         startMimeType: startFrameFile.mimetype,
-        endMimeType: endFrameFile.mimetype,
+        endMimeType: endFrameFile?.mimetype || "image/png",
+        aspectRatio: String(aspectRatio || "16:9").trim(),
+        resolution: String(resolution || "720p").trim(),
       });
 
       res.setHeader("Content-Type", "video/mp4");

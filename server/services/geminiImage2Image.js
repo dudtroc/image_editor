@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { logGeminiRequestError, logGeminiResponseDiagnostic } from "./geminiResponseDebug.js";
 
 const DEFAULT_MODEL = "gemini-2.0-flash-exp-image-generation";
 
@@ -49,10 +50,13 @@ export async function image2imageGemini(imagesB64, prompt, apiKey, model = DEFAU
   const parts = [
     { text: prompt.trim() },
     ...imagesB64.map((b64) => {
-      const clean = b64.replace(/^data:image\/\w+;base64,/, "");
+      const s = String(b64);
+      const m = s.match(/^data:(image\/(?:png|jpeg|webp|gif));base64,(.+)$/i);
+      const mime = m ? m[1] : "image/png";
+      const clean = m ? m[2] : s.replace(/^data:image\/\w+;base64,/, "");
       return {
         inlineData: {
-          mimeType: "image/png",
+          mimeType: mime,
           data: clean,
         },
       };
@@ -67,14 +71,34 @@ export async function image2imageGemini(imagesB64, prompt, apiKey, model = DEFAU
     },
   };
 
-  const response = await ai.models.generateContent({
-    model: effectiveModel,
-    contents: parts,
-    config,
-  });
+  let response;
+  try {
+    response = await ai.models.generateContent({
+      model: effectiveModel,
+      contents: parts,
+      config,
+    });
+  } catch (err) {
+    logGeminiRequestError("geminiImage2Image", err, {
+      model: effectiveModel,
+      mode: "reference-images",
+      referenceImageCount: imagesB64.length,
+    });
+    throw err;
+  }
 
   const candidate = response.candidates?.[0];
-  if (!candidate?.content?.parts) throw new Error("No content in Gemini response");
+  if (!candidate?.content?.parts) {
+    logGeminiResponseDiagnostic("geminiImage2Image", response, {
+      model: effectiveModel,
+      mode: "reference-images",
+      aspectRatio,
+      imageSize,
+      referenceImageCount: imagesB64.length,
+      reason: "missing_content_parts",
+    });
+    throw new Error("No content in Gemini response");
+  }
 
   for (const part of candidate.content.parts) {
     if (part.inlineData?.data) {
@@ -83,5 +107,13 @@ export async function image2imageGemini(imagesB64, prompt, apiKey, model = DEFAU
     }
   }
 
+  logGeminiResponseDiagnostic("geminiImage2Image", response, {
+    model: effectiveModel,
+    mode: "reference-images",
+    aspectRatio,
+    imageSize,
+    referenceImageCount: imagesB64.length,
+    reason: "no_image_inline_data",
+  });
   throw new Error("Gemini did not return an image.");
 }

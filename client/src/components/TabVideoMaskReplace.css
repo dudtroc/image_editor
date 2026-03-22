@@ -1,0 +1,10 @@
+.tab-video-mask-replace .mask-replace-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.tab-video-mask-replace .mask-replace-inputs .video-section {
+  margin-bottom: 0;
+}

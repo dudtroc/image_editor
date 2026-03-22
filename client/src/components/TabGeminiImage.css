@@ -1,0 +1,93 @@
+.tab-gemini-image .tab-desc {
+  line-height: 1.55;
+}
+
+.tab-gemini-image-env {
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.tab-gemini-image-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.tab-gemini-image-link:hover {
+  text-decoration: underline;
+}
+
+.tab-gemini-image-muted {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.tab-gemini-image-input-section {
+  margin-bottom: 20px;
+}
+
+.tab-gemini-image-input-label {
+  display: block;
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.tab-gemini-image-drop {
+  position: relative;
+  min-height: 120px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  overflow: hidden;
+}
+
+.tab-gemini-image-drop:hover,
+.tab-gemini-image-drop.dragging {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.tab-gemini-image-drop.has-image {
+  border-style: solid;
+  min-height: auto;
+  padding: 8px;
+}
+
+.tab-gemini-image-drop-text {
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 16px;
+  line-height: 1.45;
+}
+
+.tab-gemini-image-input-preview {
+  max-width: 100%;
+  max-height: 220px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}
+
+.tab-gemini-image-file-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tab-gemini-image-remove-input {
+  margin-top: 10px;
+}

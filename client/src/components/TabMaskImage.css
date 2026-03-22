@@ -1,0 +1,12 @@
+.tab-mask-image .mask-options .option-row {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.tab-mask-image .mask-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+  max-width: 52ch;
+}

@@ -1,4 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
+import { image2imageGemini } from "./geminiImage2Image.js";
+import { logGeminiRequestError, logGeminiResponseDiagnostic } from "./geminiResponseDebug.js";
 
 const DEFAULT_MODEL = "gemini-2.0-flash-exp-image-generation";
 
@@ -36,6 +38,11 @@ export const GEMINI_IMAGE_MODELS = [
 ];
 
 export async function generateImageGemini(prompt, apiKey, model = DEFAULT_MODEL, opts = {}) {
+  const refs = opts.referenceImagesB64;
+  if (Array.isArray(refs) && refs.length > 0) {
+    return image2imageGemini(refs, prompt, apiKey, model, opts);
+  }
+
   const ai = new GoogleGenAI({ apiKey });
   const effectiveModel = GEMINI_IMAGE_MODEL_IDS.includes(model) ? model : DEFAULT_MODEL;
   const aspectRatio = opts.aspectRatio ?? "1:1";
@@ -49,14 +56,29 @@ export async function generateImageGemini(prompt, apiKey, model = DEFAULT_MODEL,
     },
   };
 
-  const response = await ai.models.generateContent({
-    model: effectiveModel,
-    contents: prompt,
-    config,
-  });
+  let response;
+  try {
+    response = await ai.models.generateContent({
+      model: effectiveModel,
+      contents: prompt,
+      config,
+    });
+  } catch (err) {
+    logGeminiRequestError("geminiText2Image", err, { model: effectiveModel, mode: "text-only" });
+    throw err;
+  }
 
   const candidate = response.candidates?.[0];
-  if (!candidate?.content?.parts) throw new Error("No content in Gemini response");
+  if (!candidate?.content?.parts) {
+    logGeminiResponseDiagnostic("geminiText2Image", response, {
+      model: effectiveModel,
+      mode: "text-only",
+      aspectRatio,
+      imageSize,
+      reason: "missing_content_parts",
+    });
+    throw new Error("No content in Gemini response");
+  }
 
   for (const part of candidate.content.parts) {
     if (part.inlineData?.data) {
@@ -65,5 +87,12 @@ export async function generateImageGemini(prompt, apiKey, model = DEFAULT_MODEL,
     }
   }
 
+  logGeminiResponseDiagnostic("geminiText2Image", response, {
+    model: effectiveModel,
+    mode: "text-only",
+    aspectRatio,
+    imageSize,
+    reason: "no_image_inline_data",
+  });
   throw new Error("Gemini did not return an image.");
 }

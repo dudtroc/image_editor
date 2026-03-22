@@ -2,10 +2,14 @@ import { useState, useRef } from "react";
 import "./TabVeoGenerate.css";
 
 const VEO_MODELS = [
-  { id: "veo-2.0-generate-001", label: "Veo 2.0 (Preview)" },
-  { id: "veo-3.0-generate-exp", label: "Veo 3.0 (Preview)" },
   { id: "veo-3.1-generate-preview", label: "Veo 3.1 (Preview)" },
   { id: "veo-3.1-fast-generate-preview", label: "Veo 3.1 Fast (Preview)" },
+  { id: "veo-3.1-generate-001", label: "Veo 3.1" },
+  { id: "veo-3.1-fast-generate-001", label: "Veo 3.1 Fast" },
+  { id: "veo-3.0-generate-001", label: "Veo 3.0" },
+  { id: "veo-3.0-fast-generate-001", label: "Veo 3.0 Fast" },
+  { id: "veo-3.0-generate-exp", label: "Veo 3.0 (실험 · generate-exp)" },
+  { id: "veo-2.0-generate-001", label: "Veo 2.0" },
 ];
 
 const DURATION_OPTIONS = [4, 6, 8];
@@ -121,6 +125,8 @@ export default function TabVeoGenerate() {
       formData.append("durationSeconds", String(duration));
       formData.append("subject", subject.trim());
       formData.append("animationDesc", animationDesc.trim());
+      formData.append("aspectRatio", "16:9");
+      formData.append("resolution", "720p");
 
       const res = await fetch("/api/veo/generate", {
         method: "POST",

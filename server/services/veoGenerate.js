@@ -1,13 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
+import {
+  VEO_MODEL_IDS,
+  validateGeminiVideoParams,
+  normalizeResolution,
+  getGeminiVideoModel,
+} from "./geminiVideoModels.js";
 
-export const VEO_MODEL_IDS = [
-  "veo-2.0-generate-001",
-  "veo-3.0-generate-exp",
-  "veo-3.1-generate-preview",
-  "veo-3.1-fast-generate-preview",
-];
+export { VEO_MODEL_IDS } from "./geminiVideoModels.js";
 
-// 모든 모델이 lastFrame(끝 프레임 보간) 지원
 const LAST_FRAME_SUPPORTED_MODELS = new Set(VEO_MODEL_IDS);
 
 const POLL_INTERVAL_MS = 10_000;
@@ -39,12 +39,15 @@ function buildPrompt(subject, animationDesc) {
  *   apiKey: string,
  *   model: string,
  *   durationSeconds: number,
- *   subject: string,
- *   animationDesc: string,
+ *   subject?: string,
+ *   animationDesc?: string,
+ *   prompt?: string (사용자 전체 프롬프트 — 있으면 내부 템플릿 미사용)
  *   startFrameBase64: string,
  *   endFrameBase64?: string,
  *   startMimeType?: string,
  *   endMimeType?: string,
+ *   aspectRatio?: string,
+ *   resolution?: string,
  * }} params
  * @returns {Promise<Buffer>} MP4 video buffer
  */
@@ -54,23 +57,43 @@ export async function generateVeoVideo({
   durationSeconds,
   subject,
   animationDesc,
+  prompt: userPrompt,
   startFrameBase64,
   endFrameBase64,
   startMimeType = "image/png",
   endMimeType = "image/png",
+  aspectRatio = "16:9",
+  resolution = "720p",
 }) {
   if (!VEO_MODEL_IDS.includes(model)) {
     throw new Error(`지원하지 않는 Veo 모델입니다: ${model}`);
   }
 
+  const validation = validateGeminiVideoParams(model, {
+    resolution,
+    aspectRatio,
+    durationSeconds,
+  });
+  if (!validation.ok) {
+    throw new Error(validation.error);
+  }
+
+  const meta = getGeminiVideoModel(model);
   const ai = new GoogleGenAI({ apiKey });
-  const prompt = buildPrompt(subject, animationDesc);
+  const trimmedUser = typeof userPrompt === "string" ? userPrompt.trim() : "";
+  const prompt = trimmedUser
+    ? trimmedUser
+    : buildPrompt(subject ?? "", animationDesc ?? "");
 
   const supportsLastFrame = LAST_FRAME_SUPPORTED_MODELS.has(model);
 
   const videoConfig = {
     numberOfVideos: 1,
     durationSeconds,
+    aspectRatio: aspectRatio || "16:9",
+    ...(meta?.supportsResolutionParam
+      ? { resolution: normalizeResolution(resolution) }
+      : {}),
     ...(supportsLastFrame && endFrameBase64
       ? {
           lastFrame: {

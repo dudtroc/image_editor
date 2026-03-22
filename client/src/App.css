@@ -22,14 +22,41 @@
   letter-spacing: -0.02em;
 }
 
+.tab-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+  max-width: 100%;
+}
+
 .tabs {
   display: flex;
+  flex-wrap: nowrap;
   gap: 4px;
-  margin-bottom: 24px;
   background: var(--surface);
   padding: 4px;
   border-radius: 12px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs--categories {
   width: fit-content;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
+.tabs--sub .tab {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tab--category {
+  font-weight: 600;
 }
 
 .tab {
