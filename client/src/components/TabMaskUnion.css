@@ -1,0 +1,40 @@
+.tab-mask-union .mask-pair-upload {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 720px) {
+  .tab-mask-union .mask-pair-upload {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tab-mask-union .mask-pair-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tab-mask-union .mask-pair-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tab-mask-union .mask-pair-preview {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.tab-mask-union .mask-pair-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}

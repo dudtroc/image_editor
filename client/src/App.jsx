@@ -12,6 +12,7 @@ import TabVideoWork from "./components/TabVideoWork";
 import TabVeoGenerate from "./components/TabVeoGenerate";
 import TabGeminiVideo from "./components/TabGeminiVideo";
 import TabMaskImage from "./components/TabMaskImage";
+import TabMaskUnion from "./components/TabMaskUnion";
 import TabVideoMaskReplace from "./components/TabVideoMaskReplace";
 import "./App.css";
 
@@ -37,6 +38,7 @@ const TAB_GROUPS = [
       { id: "tile", label: "이미지 이어붙이기" },
       { id: "split", label: "이미지 분할" },
       { id: "mask-image", label: "마스크 이미지 (흰색 유지)" },
+      { id: "mask-union", label: "마스크 합치기 (흰색 병합)" },
       { id: "remove-bg", label: "배경 제거 (RGB → RGBA)" },
       { id: "style-transfer", label: "스타일 변환" },
     ],
@@ -121,6 +123,7 @@ export default function App() {
         {effectiveTab === "mask-image" && (
           <TabMaskImage />
         )}
+        {effectiveTab === "mask-union" && <TabMaskUnion />}
       </main>
     </div>
   );

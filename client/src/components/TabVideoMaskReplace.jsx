@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import { downloadZip as buildZipResponse } from "client-zip";
 import "./TabVideoWork.css";
 import "./TabVideoMaskReplace.css";
 
@@ -234,18 +235,19 @@ export default function TabVideoMaskReplace() {
         throw new Error("사용할 프레임이 없습니다. FPS를 조정하거나 짧은 동영상인지 확인하세요.");
       }
 
+      const readOpt = { willReadFrequently: true };
       const canvas = document.createElement("canvas");
       canvas.width = vw;
       canvas.height = vh;
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", readOpt);
       const cA = document.createElement("canvas");
       cA.width = vw;
       cA.height = vh;
-      const ctxA = cA.getContext("2d");
+      const ctxA = cA.getContext("2d", readOpt);
       const cB = document.createElement("canvas");
       cB.width = vw;
       cB.height = vh;
-      const ctxB = cB.getContext("2d");
+      const ctxB = cB.getContext("2d", readOpt);
 
       const out = ctx.createImageData(vw, vh);
       const o = out.data;
@@ -276,7 +278,9 @@ export default function TabVideoMaskReplace() {
           canvas.toBlob((bl) => (bl ? res(bl) : rej(new Error("프레임 인코딩 실패"))), "image/png", 0.95)
         );
         blobs.push(blob);
-        setProgress({ current: i + 1, total: frameCount });
+        if (i % 8 === 0 || i === frameCount - 1) {
+          setProgress({ current: i + 1, total: frameCount });
+        }
       }
 
       setFrames(blobs);
@@ -293,20 +297,39 @@ export default function TabVideoMaskReplace() {
     if (frames.length === 0) return;
     setError("");
     try {
-      const { default: JSZip } = await import("jszip");
-      const zip = new JSZip();
-      const folder = zip.folder("frames");
-      for (let i = 0; i < frames.length; i++) {
-        folder.file(`frame_${String(i + 1).padStart(4, "0")}.png`, frames[i]);
+      const entries = frames.map((blob, i) => ({
+        name: `frames/frame_${String(i + 1).padStart(4, "0")}.png`,
+        input: blob,
+      }));
+      const response = buildZipResponse(entries);
+
+      if (typeof window !== "undefined" && window.showSaveFilePicker) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: "mask-composite-frames.zip",
+            types: [{ description: "ZIP", accept: { "application/zip": [".zip"] } }],
+          });
+          const writable = await handle.createWritable();
+          await response.body.pipeTo(writable);
+          return;
+        } catch (pickerErr) {
+          if (pickerErr?.name === "AbortError") return;
+        }
       }
-      const content = await zip.generateAsync({ type: "blob" });
+
+      const content = await response.blob();
       const a = document.createElement("a");
       a.href = URL.createObjectURL(content);
       a.download = "mask-composite-frames.zip";
       a.click();
       URL.revokeObjectURL(a.href);
     } catch (e) {
-      setError(e.message || "ZIP 다운로드 실패");
+      const msg = e?.message || "ZIP 다운로드 실패";
+      setError(
+        /allocation|memory|out of memory/i.test(msg)
+          ? `${msg} — Chrome/Edge에서 저장 위치를 선택하면 메모리 부담이 줄어듭니다. 또는 FPS를 낮추거나 길이를 줄이세요.`
+          : msg
+      );
     }
   }, [frames]);
 
@@ -508,7 +531,9 @@ export default function TabVideoMaskReplace() {
                 {mp4Loading ? "MP4 생성 중…" : "MP4로 저장"}
               </button>
             </div>
-            <p className="download-hint">MP4는 서버(ffmpeg)에서 프레임을 이어 붙여 만듭니다.</p>
+            <p className="download-hint">
+              PNG ZIP은 가능하면 저장 대화상자(Chrome/Edge)에서 스트리밍으로 저장해 메모리를 덜 씁니다. MP4는 서버(ffmpeg)에서 합성하며, 인코딩은 빠른 프리셋(ultrafast)을 사용합니다.
+            </p>
           </section>
 
           <section className="frames-preview">
