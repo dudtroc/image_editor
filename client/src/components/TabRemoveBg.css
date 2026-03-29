@@ -54,6 +54,23 @@
   accent-color: var(--accent);
 }
 
+.tab-remove-bg .checkbox-label.download-name-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.tab-remove-bg .checkbox-label.download-name-option input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
 .tab-remove-bg .color-input-wrap {
   display: flex;
   align-items: center;

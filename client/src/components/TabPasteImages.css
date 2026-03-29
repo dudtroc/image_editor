@@ -1,0 +1,175 @@
+.tab-paste-images .tab-desc {
+  color: var(--muted);
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+}
+
+.tab-paste-images .paste-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 560px;
+  margin-bottom: 24px;
+}
+
+.tab-paste-images .paste-slot-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tab-paste-images .paste-slot-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.tab-paste-images .paste-slot {
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  min-height: 120px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
+}
+
+.tab-paste-images .paste-slot:hover,
+.tab-paste-images .paste-slot.dragging {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.tab-paste-images .paste-slot.dragging {
+  border-style: solid;
+  background: rgba(99, 102, 241, 0.12);
+}
+
+.tab-paste-images .paste-slot.has-file .paste-slot-name {
+  color: var(--accent);
+}
+
+.tab-paste-images .upload-input {
+  display: none;
+}
+
+.tab-paste-images .paste-slot-placeholder {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.tab-paste-images .paste-slot-name {
+  font-size: 0.85rem;
+  word-break: break-all;
+  line-height: 1.35;
+}
+
+.tab-paste-images .paste-slot-clear {
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.tab-paste-images .paste-slot-clear:hover {
+  color: var(--error);
+}
+
+.tab-paste-images .paste-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.tab-paste-images .btn-primary {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  background: var(--accent);
+  color: white;
+}
+
+.tab-paste-images .btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.tab-paste-images .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tab-paste-images .btn-clear {
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 8px 12px;
+}
+
+.tab-paste-images .btn-clear:hover {
+  color: var(--error);
+}
+
+.tab-paste-images .message.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.tab-paste-images .results-section {
+  margin-top: 28px;
+}
+
+.tab-paste-images .results-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tab-paste-images .results-section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.tab-paste-images .btn-download-all {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  background: var(--accent);
+  color: white;
+  transition: background 0.2s;
+}
+
+.tab-paste-images .btn-download-all:hover {
+  background: var(--accent-hover);
+}
+
+.tab-paste-images .result-preview-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  overflow: auto;
+  max-height: 70vh;
+}
+
+.tab-paste-images .result-preview {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  background: repeating-conic-gradient(#2a2a30 0% 25%, #1a1a1e 0% 50%) 50% / 16px 16px;
+  border-radius: 8px;
+}

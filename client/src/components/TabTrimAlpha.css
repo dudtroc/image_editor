@@ -1,0 +1,12 @@
+.tab-trim-alpha .trim-alpha-options .option-row {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.tab-trim-alpha .trim-alpha-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+  max-width: 52ch;
+}

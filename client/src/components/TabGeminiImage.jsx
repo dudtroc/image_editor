@@ -23,7 +23,7 @@ export default function TabGeminiImage() {
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [imageSize, setImageSize] = useState("1K");
-  const [inputImageDataUrl, setInputImageDataUrl] = useState("");
+  const [referenceImages, setReferenceImages] = useState([]);
   const [inputDragging, setInputDragging] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -77,23 +77,32 @@ export default function TabGeminiImage() {
       r.readAsDataURL(file);
     });
 
-  const applyInputImageFile = async (file) => {
-    if (!file) return;
-    if (!/^image\/(png|jpeg|webp|gif)$/i.test(file.type)) {
-      setError("PNG, JPEG, WebP, GIF 이미지만 넣을 수 있습니다.");
+  const addReferenceImageFiles = async (files) => {
+    const list = Array.from(files || []).filter((f) => /^image\/(png|jpeg|webp|gif)$/i.test(f.type));
+    if (!list.length) {
+      if (files?.length) setError("PNG, JPEG, WebP, GIF 이미지만 넣을 수 있습니다.");
       return;
     }
     try {
-      const dataUrl = await readFileAsDataUrl(file);
-      setInputImageDataUrl(dataUrl);
+      const newItems = await Promise.all(
+        list.map(async (file) => ({
+          id: crypto.randomUUID(),
+          dataUrl: await readFileAsDataUrl(file),
+        }))
+      );
+      setReferenceImages((prev) => [...prev, ...newItems]);
       setError("");
     } catch (e) {
       setError(e.message || "이미지를 불러오지 못했습니다.");
     }
   };
 
-  const clearInputImage = () => {
-    setInputImageDataUrl("");
+  const removeReferenceImage = (id) => {
+    setReferenceImages((prev) => prev.filter((x) => x.id !== id));
+  };
+
+  const clearReferenceImages = () => {
+    setReferenceImages([]);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -118,8 +127,8 @@ export default function TabGeminiImage() {
         aspectRatio,
         imageSize,
       };
-      if (inputImageDataUrl) {
-        body.referenceImages = [inputImageDataUrl];
+      if (referenceImages.length) {
+        body.referenceImages = referenceImages.map((r) => r.dataUrl);
       }
       const res = await fetch(`${API_BASE}/text2image`, {
         method: "POST",
@@ -159,13 +168,13 @@ export default function TabGeminiImage() {
         >
           Gemini 이미지 생성 문서
         </a>
-        기준으로 호환 목록을 유지합니다. 참조 이미지는 넣지 않으면 텍스트만으로 생성하고, 넣으면 그 이미지와 프롬프트를 함께 사용합니다.
+        기준으로 호환 목록을 유지합니다. 참조 이미지는 넣지 않으면 텍스트만으로 생성하고, 넣으면 여러 장을 함께 넣을 수 있으며 프롬프트와 함께 사용됩니다.
       </p>
 
       <div className="tab-gemini-image-input-section">
-        <span className="tab-gemini-image-input-label">참조 이미지 (선택)</span>
+        <span className="tab-gemini-image-input-label">참조 이미지 (선택, 여러 장)</span>
         <div
-          className={`tab-gemini-image-drop ${inputDragging ? "dragging" : ""} ${inputImageDataUrl ? "has-image" : ""}`}
+          className={`tab-gemini-image-drop ${inputDragging ? "dragging" : ""}`}
           onClick={() => fileInputRef.current?.click()}
           onDragEnter={(e) => {
             e.preventDefault();
@@ -179,8 +188,8 @@ export default function TabGeminiImage() {
           onDrop={(e) => {
             e.preventDefault();
             setInputDragging(false);
-            const file = e.dataTransfer.files?.[0];
-            if (file) applyInputImageFile(file);
+            const fl = e.dataTransfer.files;
+            if (fl?.length) addReferenceImageFiles(fl);
           }}
           role="button"
           tabIndex={0}
@@ -191,26 +200,49 @@ export default function TabGeminiImage() {
             }
           }}
         >
-          {inputImageDataUrl ? (
-            <img className="tab-gemini-image-input-preview" src={inputImageDataUrl} alt="참조 이미지 미리보기" />
-          ) : (
-            <span className="tab-gemini-image-drop-text">클릭 또는 드래그하여 이미지 추가 · 비워 두면 텍스트만 사용</span>
-          )}
+          <span className="tab-gemini-image-drop-text">
+            클릭 또는 드래그하여 이미지 추가 (여러 파일 선택 가능) · 비워 두면 텍스트만 사용
+          </span>
           <input
             ref={fileInputRef}
             type="file"
             accept="image/png,image/jpeg,image/webp,image/gif"
             className="tab-gemini-image-file-input"
+            multiple
             onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) applyInputImageFile(file);
+              const fl = e.target.files;
+              if (fl?.length) addReferenceImageFiles(fl);
               e.target.value = "";
             }}
           />
         </div>
-        {inputImageDataUrl && (
-          <button type="button" className="tab-gemini-image-remove-input btn-secondary" onClick={clearInputImage}>
-            참조 이미지 제거
+        {referenceImages.length > 0 && (
+          <ul className="tab-gemini-image-thumb-grid" aria-label="참조 이미지 목록">
+            {referenceImages.map((item, idx) => (
+              <li key={item.id} className="tab-gemini-image-thumb-item">
+                <img
+                  className="tab-gemini-image-thumb-img"
+                  src={item.dataUrl}
+                  alt={`참조 이미지 ${idx + 1}`}
+                />
+                <button
+                  type="button"
+                  className="tab-gemini-image-thumb-remove"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeReferenceImage(item.id);
+                  }}
+                  aria-label={`참조 이미지 ${idx + 1} 제거`}
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {referenceImages.length > 0 && (
+          <button type="button" className="tab-gemini-image-remove-input btn-secondary" onClick={clearReferenceImages}>
+            참조 이미지 모두 제거
           </button>
         )}
       </div>

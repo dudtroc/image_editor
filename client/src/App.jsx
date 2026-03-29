@@ -6,17 +6,19 @@ import TabResize from "./components/TabResize";
 import TabTileImage from "./components/TabTileImage";
 import TabSplitImage from "./components/TabSplitImage";
 import TabGeminiImage from "./components/TabGeminiImage";
-import TabStyleTransfer from "./components/TabStyleTransfer";
 import TabCropToAsset from "./components/TabCropToAsset";
 import TabVideoWork from "./components/TabVideoWork";
 import TabVeoGenerate from "./components/TabVeoGenerate";
 import TabGeminiVideo from "./components/TabGeminiVideo";
 import TabMaskImage from "./components/TabMaskImage";
 import TabMaskUnion from "./components/TabMaskUnion";
+import TabTrimAlpha from "./components/TabTrimAlpha";
+import TabGrayscale from "./components/TabGrayscale";
+import TabPasteImages from "./components/TabPasteImages";
 import TabVideoMaskReplace from "./components/TabVideoMaskReplace";
 import "./App.css";
 
-/** 상위: 생성 / 이미지 처리 — 하위에 기존 기능 탭 배치 */
+/** 상위: 생성 / 이미지 처리 / 동영상 처리 — 하위에 기능 탭 배치 */
 const TAB_GROUPS = [
   {
     id: "generate",
@@ -32,15 +34,23 @@ const TAB_GROUPS = [
     id: "process",
     label: "이미지 처리",
     tabs: [
-      { id: "video-work", label: "동영상 작업" },
-      { id: "video-mask-replace", label: "마스크 영역 교체 (A/B)" },
       { id: "resize", label: "이미지 리사이즈" },
       { id: "tile", label: "이미지 이어붙이기" },
       { id: "split", label: "이미지 분할" },
+      { id: "paste-images", label: "이미지 붙이기" },
+      { id: "trim-alpha", label: "투명 영역 자르기 (알파)" },
+      { id: "grayscale", label: "흑백 변환 (RGBA)" },
       { id: "mask-image", label: "마스크 이미지 (흰색 유지)" },
       { id: "mask-union", label: "마스크 합치기 (흰색 병합)" },
       { id: "remove-bg", label: "배경 제거 (RGB → RGBA)" },
-      { id: "style-transfer", label: "스타일 변환" },
+    ],
+  },
+  {
+    id: "video-process",
+    label: "동영상 처리",
+    tabs: [
+      { id: "video-work", label: "동영상 작업" },
+      { id: "video-mask-replace", label: "마스크 영역 교체 (A/B)" },
     ],
   },
 ];
@@ -105,9 +115,6 @@ export default function App() {
         {effectiveTab === "veo-generate" && (
           <TabVeoGenerate />
         )}
-        {effectiveTab === "style-transfer" && (
-          <TabStyleTransfer provider={provider} />
-        )}
         {effectiveTab === "remove-bg" && (
           <TabRemoveBg provider={provider} />
         )}
@@ -120,6 +127,9 @@ export default function App() {
         {effectiveTab === "split" && (
           <TabSplitImage />
         )}
+        {effectiveTab === "paste-images" && <TabPasteImages />}
+        {effectiveTab === "trim-alpha" && <TabTrimAlpha />}
+        {effectiveTab === "grayscale" && <TabGrayscale />}
         {effectiveTab === "mask-image" && (
           <TabMaskImage />
         )}

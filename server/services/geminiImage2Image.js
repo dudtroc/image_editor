@@ -10,6 +10,13 @@ const GEMINI_IMAGE_MODEL_IDS = [
   "gemini-2.5-flash-preview-image",
 ];
 
+function geminiImageConfigForModel(model, aspectRatio, imageSize) {
+  if (model === "gemini-3.1-flash-image-preview" || model === "gemini-3-pro-image-preview") {
+    return { aspectRatio, imageSize };
+  }
+  return { aspectRatio };
+}
+
 const GEMINI_ASPECT_RATIOS = [
   { value: "1:1", label: "1:1 (정사각)" },
   { value: "2:3", label: "2:3" },
@@ -47,7 +54,7 @@ export async function image2imageGemini(imagesB64, prompt, apiKey, model = DEFAU
   const aspectRatio = opts.aspectRatio ?? "1:1";
   const imageSize = opts.imageSize ?? "1K";
 
-  const parts = [
+  const contents = [
     { text: prompt.trim() },
     ...imagesB64.map((b64) => {
       const s = String(b64);
@@ -65,17 +72,14 @@ export async function image2imageGemini(imagesB64, prompt, apiKey, model = DEFAU
 
   const config = {
     responseModalities: ["TEXT", "IMAGE"],
-    imageConfig: {
-      aspectRatio,
-      imageSize,
-    },
+    imageConfig: geminiImageConfigForModel(effectiveModel, aspectRatio, imageSize),
   };
 
   let response;
   try {
     response = await ai.models.generateContent({
       model: effectiveModel,
-      contents: parts,
+      contents,
       config,
     });
   } catch (err) {

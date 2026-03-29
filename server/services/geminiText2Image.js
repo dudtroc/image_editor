@@ -11,6 +11,13 @@ const GEMINI_IMAGE_MODEL_IDS = [
   "gemini-2.5-flash-preview-image",
 ];
 
+function geminiImageConfigForModel(model, aspectRatio, imageSize) {
+  if (model === "gemini-3.1-flash-image-preview" || model === "gemini-3-pro-image-preview") {
+    return { aspectRatio, imageSize };
+  }
+  return { aspectRatio };
+}
+
 /** Gemini ImageConfig: aspectRatio, imageSize (1K, 2K, 4K) */
 const GEMINI_ASPECT_RATIOS = [
   { value: "1:1", label: "1:1 (정사각)" },
@@ -50,10 +57,7 @@ export async function generateImageGemini(prompt, apiKey, model = DEFAULT_MODEL,
 
   const config = {
     responseModalities: ["TEXT", "IMAGE"],
-    imageConfig: {
-      aspectRatio,
-      imageSize,
-    },
+    imageConfig: geminiImageConfigForModel(effectiveModel, aspectRatio, imageSize),
   };
 
   let response;

@@ -6,6 +6,7 @@ export default function TabResize() {
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
   const [keepRatio, setKeepRatio] = useState(false);
+  const [keepOriginalDownloadName, setKeepOriginalDownloadName] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -130,7 +131,7 @@ export default function TabResize() {
     const base = filename.replace(/\.[^.]+$/, "") || "image";
     const a = document.createElement("a");
     a.href = dataUrl;
-    a.download = `${base}-${w}x${h}.png`;
+    a.download = keepOriginalDownloadName ? `${base}.png` : `${base}-${w}x${h}.png`;
     a.click();
   };
 
@@ -195,6 +196,14 @@ export default function TabResize() {
             onChange={(e) => setKeepRatio(e.target.checked)}
           />
           <span>비율 유지 (지정 크기 안에 맞춤)</span>
+        </label>
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={keepOriginalDownloadName}
+            onChange={(e) => setKeepOriginalDownloadName(e.target.checked)}
+          />
+          <span>다운로드 시 원본 파일명 유지 (접미사 없음, PNG)</span>
         </label>
       </div>
 

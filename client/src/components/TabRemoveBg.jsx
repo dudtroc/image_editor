@@ -50,6 +50,7 @@ export default function TabRemoveBg({ provider }) {
   const [placementMode, setPlacementMode] = useState("direct"); // "direct" | "center"
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
   const [quality, setQuality] = useState("auto"); // OpenAI: low | medium | high | auto
+  const [keepOriginalDownloadName, setKeepOriginalDownloadName] = useState(false);
   const inputRef = useRef(null);
 
   const QUALITY_OPTIONS = [
@@ -130,7 +131,7 @@ export default function TabRemoveBg({ provider }) {
     const base = filename.replace(/\.[^.]+$/, "") || "image";
     const a = document.createElement("a");
     a.href = `data:image/png;base64,${b64}`;
-    a.download = `${base}-transparent.png`;
+    a.download = keepOriginalDownloadName ? `${base}.png` : `${base}-transparent.png`;
     a.click();
   };
 
@@ -211,6 +212,15 @@ export default function TabRemoveBg({ provider }) {
           </select>
         </div>
       )}
+
+      <label className="checkbox-label download-name-option">
+        <input
+          type="checkbox"
+          checked={keepOriginalDownloadName}
+          onChange={(e) => setKeepOriginalDownloadName(e.target.checked)}
+        />
+        <span>다운로드 시 원본 파일명 유지 (접미사 없음, PNG)</span>
+      </label>
 
       <div
         className={`upload-zone ${isDragging ? "dragging" : ""}`}
