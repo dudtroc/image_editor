@@ -13,9 +13,13 @@ function modelLabel(entry) {
   return typeof entry === "string" ? entry : entry.label;
 }
 
+function newPromptRow() {
+  return { id: crypto.randomUUID(), text: "" };
+}
+
 export default function TabGeminiImage() {
-  const [prompt, setPrompt] = useState("");
-  const [imageB64, setImageB64] = useState("");
+  const [promptRows, setPromptRows] = useState(() => [newPromptRow()]);
+  const [batchResults, setBatchResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [models, setModels] = useState([]);
@@ -106,39 +110,70 @@ export default function TabGeminiImage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const updatePromptText = (id, text) => {
+    setPromptRows((prev) => prev.map((row) => (row.id === id ? { ...row, text } : row)));
+  };
+
+  const addPromptRow = () => {
+    setPromptRows((prev) => [...prev, newPromptRow()]);
+  };
+
+  const removePromptRow = (id) => {
+    setPromptRows((prev) => (prev.length <= 1 ? prev : prev.filter((row) => row.id !== id)));
+  };
+
+  const fetchOneImage = async (promptText) => {
+    const body = {
+      prompt: promptText,
+      provider: "gemini",
+      model,
+      aspectRatio,
+      imageSize,
+    };
+    if (referenceImages.length) {
+      body.referenceImages = referenceImages.map((r) => r.dataUrl);
+    }
+    const res = await fetch(`${API_BASE}/text2image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "생성 실패");
+    if (!data.data) throw new Error("이미지 데이터 없음");
+    return data.data;
+  };
+
   const generate = async () => {
     if (!models.length) {
       setError("모델 목록을 불러올 수 없습니다. 서버를 확인해 주세요.");
       return;
     }
-    const trimmed = prompt.trim();
-    if (!trimmed) {
-      setError("프롬프트를 입력해 주세요.");
+    const jobs = promptRows
+      .map((row) => ({ id: row.id, prompt: row.text.trim() }))
+      .filter((j) => j.prompt);
+    if (!jobs.length) {
+      setError("프롬프트를 하나 이상 입력해 주세요.");
       return;
     }
     setLoading(true);
     setError("");
-    setImageB64("");
+    setBatchResults(null);
     try {
-      const body = {
-        prompt: trimmed,
-        provider: "gemini",
-        model,
-        aspectRatio,
-        imageSize,
-      };
-      if (referenceImages.length) {
-        body.referenceImages = referenceImages.map((r) => r.dataUrl);
-      }
-      const res = await fetch(`${API_BASE}/text2image`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+      const settled = await Promise.allSettled(jobs.map((j) => fetchOneImage(j.prompt)));
+      const next = jobs.map((j, i) => {
+        const s = settled[i];
+        if (s.status === "fulfilled") {
+          return { id: j.id, prompt: j.prompt, imageB64: s.value, error: null };
+        }
+        return {
+          id: j.id,
+          prompt: j.prompt,
+          imageB64: null,
+          error: s.reason?.message || "생성 실패",
+        };
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "생성 실패");
-      if (data.data) setImageB64(data.data);
-      else throw new Error("이미지 데이터 없음");
+      setBatchResults(next);
     } catch (err) {
       setError(err.message || "이미지 생성 중 오류가 발생했습니다.");
     } finally {
@@ -146,14 +181,17 @@ export default function TabGeminiImage() {
     }
   };
 
-  const download = useCallback(() => {
-    if (!imageB64) return;
-    const safeModel = model.replace(/[^\w.-]/g, "_");
-    const a = document.createElement("a");
-    a.href = `data:image/png;base64,${imageB64}`;
-    a.download = `gemini-${safeModel}-${Date.now()}.png`;
-    a.click();
-  }, [imageB64, model]);
+  const downloadOne = useCallback(
+    (imageB64, index) => {
+      if (!imageB64) return;
+      const safeModel = model.replace(/[^\w.-]/g, "_");
+      const a = document.createElement("a");
+      a.href = `data:image/png;base64,${imageB64}`;
+      a.download = `gemini-${safeModel}-${index + 1}-${Date.now()}.png`;
+      a.click();
+    },
+    [model]
+  );
 
   return (
     <div className="tab-text2image tab-gemini-image">
@@ -168,7 +206,8 @@ export default function TabGeminiImage() {
         >
           Gemini 이미지 생성 문서
         </a>
-        기준으로 호환 목록을 유지합니다. 참조 이미지는 넣지 않으면 텍스트만으로 생성하고, 넣으면 여러 장을 함께 넣을 수 있으며 프롬프트와 함께 사용됩니다.
+        기준으로 호환 목록을 유지합니다. 참조 이미지는 넣지 않으면 텍스트만으로 생성하고, 넣으면 여러 장을 함께 넣을 수 있으며 프롬프트와 함께 사용됩니다.{" "}
+        <span className="tab-gemini-image-batch-hint">+ 프롬프트 추가</span>로 칸을 늘리면 여러 개를 한 번에(병렬) 생성할 수 있으며, 비어 있는 칸은 건너뜁니다.
       </p>
 
       <div className="tab-gemini-image-input-section">
@@ -304,32 +343,90 @@ export default function TabGeminiImage() {
         </div>
       )}
 
-      <div className="prompt-row">
-        <textarea
-          className="prompt-input"
-          placeholder="생성할 이미지를 설명해 주세요. 예: 달 위를 걷는 고양이, 수채화 스타일"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          rows={4}
-        />
-        <button
-          type="button"
-          className="btn-primary"
-          onClick={generate}
-          disabled={loading || !modelsLoaded || !models.length}
-        >
-          {loading ? "생성 중…" : "이미지 생성"}
-        </button>
+      <div className="prompt-row tab-gemini-image-prompt-block">
+        <div className="tab-gemini-image-prompt-list" role="list">
+          {promptRows.map((row, idx) => (
+            <div key={row.id} className="tab-gemini-image-prompt-row" role="listitem">
+              <label className="tab-gemini-image-prompt-label" htmlFor={`gemini-prompt-${row.id}`}>
+                프롬프트 {idx + 1}
+              </label>
+              <div className="tab-gemini-image-prompt-row-inner">
+                <textarea
+                  id={`gemini-prompt-${row.id}`}
+                  className="prompt-input tab-gemini-image-prompt-textarea"
+                  placeholder="생성할 이미지를 설명해 주세요. 예: 달 위를 걷는 고양이, 수채화 스타일"
+                  value={row.text}
+                  onChange={(e) => updatePromptText(row.id, e.target.value)}
+                  rows={3}
+                />
+                <div className="tab-gemini-image-prompt-side">
+                  <button
+                    type="button"
+                    className="tab-gemini-image-prompt-btn tab-gemini-image-prompt-minus"
+                    onClick={() => removePromptRow(row.id)}
+                    disabled={promptRows.length <= 1}
+                    aria-label={`프롬프트 ${idx + 1} 칸 제거`}
+                    title="이 칸 제거"
+                  >
+                    −
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="tab-gemini-image-prompt-actions">
+          <button
+            type="button"
+            className="btn-secondary tab-gemini-image-prompt-btn tab-gemini-image-prompt-plus"
+            onClick={addPromptRow}
+            aria-label="프롬프트 칸 추가"
+          >
+            + 프롬프트 추가
+          </button>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={generate}
+            disabled={loading || !modelsLoaded || !models.length}
+          >
+            {loading ? "생성 중…" : "이미지 생성 (전체)"}
+          </button>
+        </div>
       </div>
 
       {error && <div className="message error">{error}</div>}
 
-      {imageB64 && (
-        <div className="result-box">
-          <img src={`data:image/png;base64,${imageB64}`} alt="Gemini 생성 이미지" className="generated-image" />
-          <button type="button" className="btn-secondary" onClick={download}>
-            PNG 다운로드
-          </button>
+      {batchResults && batchResults.length > 0 && (
+        <div className="tab-gemini-image-results">
+          <h3 className="tab-gemini-image-results-title">생성 결과</h3>
+          <ul className="tab-gemini-image-results-grid">
+            {batchResults.map((item, index) => (
+              <li key={item.id} className="tab-gemini-image-result-card">
+                <p className="tab-gemini-image-result-prompt" title={item.prompt}>
+                  {item.prompt}
+                </p>
+                {item.error ? (
+                  <div className="tab-gemini-image-result-error message error">{item.error}</div>
+                ) : (
+                  <>
+                    <img
+                      src={`data:image/png;base64,${item.imageB64}`}
+                      alt=""
+                      className="generated-image tab-gemini-image-result-img"
+                    />
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => downloadOne(item.imageB64, index)}
+                    >
+                      PNG 다운로드
+                    </button>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

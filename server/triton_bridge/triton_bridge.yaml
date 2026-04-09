@@ -1,0 +1,7 @@
+# Triton Inference Server (tritonclient용: host:port 형식, http:// 를 붙이지 않음)
+triton_url: "localhost:18000"
+# triton_url: "213.173.110.111:39845"
+# http | grpc
+triton_protocol: "http"
+# 브릿지 → Triton 추론 클라이언트 타임아웃(초). TRITON_INFER_TIMEOUT_S 환경 변수가 있으면 우선.
+triton_infer_timeout_s: 86400

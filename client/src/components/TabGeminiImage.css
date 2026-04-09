@@ -125,3 +125,141 @@
 .tab-gemini-image-remove-input {
   margin-top: 10px;
 }
+
+.tab-gemini-image-batch-hint {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.tab-gemini-image-prompt-block {
+  margin-bottom: 24px;
+}
+
+.tab-gemini-image-prompt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tab-gemini-image-prompt-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tab-gemini-image-prompt-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.tab-gemini-image-prompt-row-inner {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.tab-gemini-image-prompt-textarea {
+  flex: 1;
+  min-height: 88px;
+}
+
+.tab-gemini-image-prompt-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+.tab-gemini-image-prompt-btn {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-gemini-image-prompt-minus {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.tab-gemini-image-prompt-minus:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.tab-gemini-image-prompt-minus:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tab-gemini-image-prompt-plus {
+  font-size: 0.95rem;
+}
+
+.tab-gemini-image-prompt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.tab-gemini-image-results {
+  margin-top: 8px;
+}
+
+.tab-gemini-image-results-title {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tab-gemini-image-results-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.tab-gemini-image-result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tab-gemini-image-result-prompt {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tab-gemini-image-result-img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.tab-gemini-image-result-error {
+  margin: 0;
+  font-size: 0.88rem;
+}
