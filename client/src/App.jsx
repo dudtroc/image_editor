@@ -16,6 +16,7 @@ import TabTrimAlpha from "./components/TabTrimAlpha";
 import TabGrayscale from "./components/TabGrayscale";
 import TabPasteImages from "./components/TabPasteImages";
 import TabVideoMaskReplace from "./components/TabVideoMaskReplace";
+import TabItemGenerate from "./components/TabItemGenerate";
 import "./App.css";
 
 /** 상위: 생성 / 이미지 처리 / 동영상 처리 — 하위에 기능 탭 배치 */
@@ -28,6 +29,7 @@ const TAB_GROUPS = [
       { id: "gemini-video", label: "Gemini 동영상 생성" },
       { id: "crop-to-asset", label: "크롭 → 에셋" },
       { id: "veo-generate", label: "동영상 생성 (Veo)" },
+      { id: "item-generate", label: "아이템 생성" },
     ],
   },
   {
@@ -134,6 +136,7 @@ export default function App() {
           <TabMaskImage />
         )}
         {effectiveTab === "mask-union" && <TabMaskUnion />}
+        {effectiveTab === "item-generate" && <TabItemGenerate />}
       </main>
     </div>
   );

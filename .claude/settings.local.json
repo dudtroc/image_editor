@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/Users/dudtr/PROJECT/image_editor/client && npx vite build 2>&1 | tail -20)",
+      "Bash(npx vite:*)"
+    ]
+  }
+}

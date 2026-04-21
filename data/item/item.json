@@ -1,0 +1,472 @@
+{
+  "style_prompt": "STYLE: Bold cartoon RPG item icon (Cat Quest / Castle Crashers style). THICK black outlines (5-6px), bold and clean edges. Maximum 2-3 flat color fills per object, absolutely NO gradients. Minimal internal lines — silhouette-driven design. NO textures, NO fine patterns, NO realistic shading, NO hatching. Simple chunky forms, exaggerated proportions. FRAMING: The ENTIRE object must be fully visible and contained inside the canvas with generous safe margin on ALL sides. Item centered, fills at most 75% of canvas. Nothing may touch or extend beyond any edge. Transparent background PNG. PALETTE: Indigo #2D1B4E, teal #4A7C7E, amber #F5C542, gold #E8B84B, rose #E8B4C8, lavender #B89FD4, plum #1A0F2E. GENERATION SIZE BY RATIO: 1:1(1x1,2x2)→1024x1024, 2:1(2x1)→1024x512, 1:2(1x2)→512x1024, 3:1(3x1)→1536x512, 1:3(1x3)→512x1536, 4:1(4x1)→2048x512, 1:4(1x4)→512x2048, 3:2(3x2)→1152x768, 2:3(2x3)→768x1152, 5:1(5x1)→2560x512, 1:5(1x5)→512x2560. NEGATIVE: realistic, detailed texture, 3D, gradient, photo, thin lines, intricate, complex shading, neon, background, fine detail, hatching, crosshatch, cropped, clipped, cut off, partial object, extending beyond frame, bleeding edge",
+
+  "stage1": {
+    "_name": "부식",
+    "item1": {
+      "name": "Rusty Nail",
+      "name_kr": "녹슨 못",
+      "prompt": "A single rusty bent nail, brown body with green corrosion patches. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item2": {
+      "name": "Corroded Dagger",
+      "name_kr": "부식의 단검",
+      "prompt": "A single short dagger with corroded green-brown blade, acid holes in the metal. Fully visible, compact shape. Horizontal layout. [1024x512, 2:1]",
+      "size_w": 2,
+      "size_h": 1
+    },
+    "item3": {
+      "name": "Acid Vial",
+      "name_kr": "산성 약병",
+      "prompt": "A single tall glass vial with cork, filled with bright green bubbling acid liquid. Self-contained shape. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item4": {
+      "name": "Rust Essence",
+      "name_kr": "녹의 정수",
+      "prompt": "A single small round vial of dark green glowing liquid. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item5": {
+      "name": "Rusted Greatsword",
+      "name_kr": "녹먹은 대검",
+      "prompt": "A single wide rust-covered two-handed sword with green corrosion veins on blade. Entire sword visible. Horizontal layout. [1536x512, 3:1]",
+      "size_w": 3,
+      "size_h": 1
+    },
+    "item6": {
+      "name": "Dissolving Fang",
+      "name_kr": "용해의 송곳니",
+      "prompt": "A single large beast fang with green acid coating on tip, surface cracked with corrosion. No dripping liquid. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item7": {
+      "name": "Heart of Corrosion",
+      "name_kr": "부식의 심장",
+      "prompt": "A single heart-shaped green crystal with corrosive energy glow, acid veins visible inside. Compact shape. [1024x1024, 1:1]",
+      "size_w": 2,
+      "size_h": 2
+    },
+    "item8": {
+      "name": "Rust King Seal",
+      "name_kr": "부식왕의 인장",
+      "prompt": "A single small royal seal stamp made of green crystallized corrosion with amber gem on top. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item9": {
+      "name": "All-Devouring Scythe",
+      "name_kr": "만식의 대낫",
+      "prompt": "A single massive war scythe with corroded green blade, amber runes on handle. Entire weapon fully visible. Vertical rectangle. [768x1152, 2:3]",
+      "size_w": 2,
+      "size_h": 3
+    }
+  },
+
+  "stage2": {
+    "_name": "독성",
+    "item1": {
+      "name": "Poison Spore",
+      "name_kr": "독 포자",
+      "prompt": "A single compact cluster of purple-violet toxic spores grouped together. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item2": {
+      "name": "Venom Vial",
+      "name_kr": "맹독 약병",
+      "prompt": "A single tall potion bottle filled with bubbling purple venom, skull mark on label. Self-contained shape. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item3": {
+      "name": "Toad Charm",
+      "name_kr": "두꺼비 부적",
+      "prompt": "A single wooden toad-shaped amulet with purple glowing eyes. Compact shape. Horizontal layout. [1024x512, 2:1]",
+      "size_w": 2,
+      "size_h": 1
+    },
+    "item4": {
+      "name": "Venom Seed",
+      "name_kr": "맹독의 씨앗",
+      "prompt": "A single small seed with deep purple glow close to surface. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item5": {
+      "name": "Serpent Necklace",
+      "name_kr": "독사의 목걸이",
+      "prompt": "A single coiled serpent pendant with short looped chain attached, violet venom on fangs. Entire pendant and chain fully visible inside frame. Vertical layout. [512x1536, 1:3]",
+      "size_w": 1,
+      "size_h": 3
+    },
+    "item6": {
+      "name": "Poison Queen Ring",
+      "name_kr": "독 여왕의 반지",
+      "prompt": "A single snake-shaped ring with a violet gemstone eye. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item7": {
+      "name": "Plague Staff",
+      "name_kr": "역병의 지팡이",
+      "prompt": "A single tall gnarled staff topped with a purple poison orb, thin cracks on the orb surface. Entire staff fully visible from tip to bottom. Vertical layout. [512x2048, 1:4]",
+      "size_w": 1,
+      "size_h": 4
+    },
+    "item8": {
+      "name": "Venom Blossom",
+      "name_kr": "맹독의 꽃",
+      "prompt": "A single beautiful deadly flower in full bloom, violet-gold petals with small poison dew on petals. Compact shape. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item9": {
+      "name": "Poison Queen Crown",
+      "name_kr": "독 여왕의 왕관",
+      "prompt": "A single grand crown adorned with purple venomous gems and twisted serpent motifs, amber accents. Entire crown fully visible. Wide rectangle. [1152x768, 3:2]",
+      "size_w": 3,
+      "size_h": 2
+    }
+  },
+
+  "stage3": {
+    "_name": "광폭",
+    "item1": {
+      "name": "Moonlight Shard",
+      "name_kr": "달빛 파편",
+      "prompt": "A single crescent-shaped silver moonlight crystal shard with pale blue-white glow close to surface. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item2": {
+      "name": "Wild Earrings",
+      "name_kr": "야성의 귀걸이",
+      "prompt": "A pair of fang-shaped silver earrings side by side with faint red glow. Compact shape. Horizontal layout. [1024x512, 2:1]",
+      "size_w": 2,
+      "size_h": 1
+    },
+    "item3": {
+      "name": "Rabbit Foot Charm",
+      "name_kr": "토끼발 부적",
+      "prompt": "A single golden rabbit-foot charm with short looped chain attached, amber glow. Entire charm fully visible. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item4": {
+      "name": "Frenzy Eye",
+      "name_kr": "광란의 눈동자",
+      "prompt": "A single cat-eye gemstone glowing fierce red-orange with slit pupil. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item5": {
+      "name": "Moonlit Twin Blades",
+      "name_kr": "달빛 쌍검",
+      "prompt": "Two crossed crescent-blade swords forming compact X shape, silver blades. Entire swords fully visible. [1024x1024, 1:1]",
+      "size_w": 2,
+      "size_h": 2
+    },
+    "item6": {
+      "name": "Full Moon Earring",
+      "name_kr": "만월의 귀고리",
+      "prompt": "A single full-moon shaped golden earring with cat-ear silhouette cutout. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item7": {
+      "name": "Beast Claws",
+      "name_kr": "야수의 발톱",
+      "prompt": "Four connected giant silver beast claws in a compact horizontal row with red tips. All claws fully visible inside frame. Extra-wide. [2048x512, 4:1]",
+      "size_w": 4,
+      "size_h": 1
+    },
+    "item8": {
+      "name": "Moon Strike",
+      "name_kr": "달의 일격",
+      "prompt": "A single glowing crescent moon talisman with amber light aura close to surface. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item9": {
+      "name": "Frenzy Greatsword",
+      "name_kr": "광란의 대검",
+      "prompt": "A single massive vertical greatsword with crescent moon blade, faint red glow on the edge. Entire sword from pommel to tip fully visible. Ultra-tall. [512x2560, 1:5]",
+      "size_w": 1,
+      "size_h": 5
+    }
+  },
+
+  "stage4": {
+    "_name": "시간",
+    "item1": {
+      "name": "Broken Gear",
+      "name_kr": "깨진 톱니",
+      "prompt": "A single broken brass gear tooth with worn edges. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item2": {
+      "name": "Clockwork Key",
+      "name_kr": "태엽 열쇠",
+      "prompt": "A single ornate brass clockwork key with gear-shaped bow. Entire key fully visible. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item3": {
+      "name": "Hourglass Fragment",
+      "name_kr": "모래시계 조각",
+      "prompt": "A single broken hourglass with sand pile at base, cracked brass frame. Self-contained shape. Horizontal layout. [1024x512, 2:1]",
+      "size_w": 2,
+      "size_h": 1
+    },
+    "item4": {
+      "name": "Frozen Second Hand",
+      "name_kr": "정지된 초침",
+      "prompt": "A single clock second-hand needle, brass with golden tip. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item5": {
+      "name": "Perpetual Spring",
+      "name_kr": "영구 태엽",
+      "prompt": "A single large clockwork spring with interlocking brass gears, center gear glows blue. Compact assembly. [1024x1024, 1:1]",
+      "size_w": 2,
+      "size_h": 2
+    },
+    "item6": {
+      "name": "Stopped Pocket Watch",
+      "name_kr": "멈춘 회중시계",
+      "prompt": "A single golden pocket watch with stopped hands at 6 o'clock, short closed chain loop. Entire watch fully visible. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item7": {
+      "name": "Spring of Time",
+      "name_kr": "시간의 태엽",
+      "prompt": "A single large golden clockwork spring with purple energy glow between coils. Compact shape. [1024x1024, 1:1]",
+      "size_w": 2,
+      "size_h": 2
+    },
+    "item8": {
+      "name": "Chronos Gear",
+      "name_kr": "크로노스 기어",
+      "prompt": "A single golden gear with Roman numerals etched around the rim, amber glow. Compact shape. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item9": {
+      "name": "Tower of Time",
+      "name_kr": "시간의 탑",
+      "prompt": "A single miniature ornate clock tower with golden glowing clock face. Entire tower from base to spire fully visible. Vertical rectangle. [768x1152, 2:3]",
+      "size_w": 2,
+      "size_h": 3
+    }
+  },
+
+  "stage5": {
+    "_name": "빙결",
+    "item1": {
+      "name": "Frost Shard",
+      "name_kr": "서리 조각",
+      "prompt": "A single small translucent ice crystal shard, pale blue-white color. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item2": {
+      "name": "Ice Fragment",
+      "name_kr": "얼음 조각",
+      "prompt": "A single flat shard of clear ice with frost edges, faint blue shimmer. Compact shape. Horizontal layout. [1024x512, 2:1]",
+      "size_w": 2,
+      "size_h": 1
+    },
+    "item3": {
+      "name": "Frost Feather",
+      "name_kr": "냉기의 깃털",
+      "prompt": "Two pale blue feathers bundled together with an ice-crystal clasp. Compact bundle. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item4": {
+      "name": "Winter Tear",
+      "name_kr": "겨울의 눈물",
+      "prompt": "A single teardrop-shaped ice gemstone with a snowflake visible inside. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item5": {
+      "name": "Glacier Shield",
+      "name_kr": "빙하 방패",
+      "prompt": "A single round shield made of transparent glacier ice with frost runes. Compact shape. [1024x1024, 1:1]",
+      "size_w": 2,
+      "size_h": 2
+    },
+    "item6": {
+      "name": "Absolute Zero Crystal",
+      "name_kr": "절대영도 수정",
+      "prompt": "A single blue crystal orb with frost core, tiny ice particles close to surface. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item7": {
+      "name": "Frost King Helm",
+      "name_kr": "서리 왕의 투구",
+      "prompt": "A single wide viking helmet encrusted with ice crystals and short blue-purple frost horns. Entire helmet fully visible. Extra-wide. [2048x512, 4:1]",
+      "size_w": 4,
+      "size_h": 1
+    },
+    "item8": {
+      "name": "Frost Mirror",
+      "name_kr": "서리의 거울",
+      "prompt": "A single small hand mirror with ice flower frozen inside the glass, silver frame. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item9": {
+      "name": "Eternal Glacier",
+      "name_kr": "영겁의 빙하",
+      "prompt": "A single grand fortress-like glacier formation with deep blue ice and frost crystals on surface. Entire formation fully visible. Wide rectangle. [1152x768, 3:2]",
+      "size_w": 3,
+      "size_h": 2
+    }
+  },
+
+  "stage6": {
+    "_name": "침식",
+    "item1": {
+      "name": "Dried Thorn",
+      "name_kr": "마른 가시",
+      "prompt": "A single dried thorn, dark brown with sharp crimson tip. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item2": {
+      "name": "Thorn Whip",
+      "name_kr": "가시 채찍",
+      "prompt": "A single coiled whip wrapped in sharp thorns, dark red leather handle. Coiled compact shape, entire whip visible. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item3": {
+      "name": "Scale Fragment",
+      "name_kr": "비늘 조각",
+      "prompt": "Two green reptile scales with sharp edges and pink vein patterns side by side. Compact shape. Horizontal layout. [1024x512, 2:1]",
+      "size_w": 2,
+      "size_h": 1
+    },
+    "item4": {
+      "name": "Piercing Thorn",
+      "name_kr": "관통의 가시",
+      "prompt": "A single large thorn, red base fading to black tip, faint glow close to surface. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item5": {
+      "name": "Thorned Vine Blade",
+      "name_kr": "가시 덩굴 검",
+      "prompt": "A single rapier with thorny vines tightly wrapped around the blade, crimson bloom at crossguard. Entire sword fully visible. Horizontal layout. [1536x512, 3:1]",
+      "size_w": 3,
+      "size_h": 1
+    },
+    "item6": {
+      "name": "Crown of Thorns",
+      "name_kr": "가시의 왕관",
+      "prompt": "A single crown woven from dark crimson thorns with short sharp spikes. Entire crown fully visible. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item7": {
+      "name": "Piercing Sword",
+      "name_kr": "기사의 관통검",
+      "prompt": "A single knight's longsword with thorn engravings on blade, crimson edge glow. Entire sword fully visible. [1024x1024, 1:1]",
+      "size_w": 2,
+      "size_h": 2
+    },
+    "item8": {
+      "name": "Thorn Piercer",
+      "name_kr": "소른 피어서",
+      "prompt": "A single spear with thorny vines tightly wrapped around shaft, crimson tip. Entire spear fully visible. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item9": {
+      "name": "Erosion Greatsword",
+      "name_kr": "침식의 대검",
+      "prompt": "A single grand ceremonial greatsword with golden thorn engravings along the blade. Entire sword from pommel to tip fully visible. Ultra-tall. [512x2560, 1:5]",
+      "size_w": 1,
+      "size_h": 5
+    }
+  },
+
+  "stage7": {
+    "_name": "혼돈",
+    "item1": {
+      "name": "Ink Drop",
+      "name_kr": "잉크 방울",
+      "prompt": "A single droplet of black ink with rainbow shimmer inside. Compact round shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item2": {
+      "name": "Ink Quill",
+      "name_kr": "잉크 깃펜",
+      "prompt": "A single ink-stained quill feather pen with rainbow sheen. Entire pen fully visible. Horizontal layout. [1024x512, 2:1]",
+      "size_w": 2,
+      "size_h": 1
+    },
+    "item3": {
+      "name": "Chaos Fragment",
+      "name_kr": "혼돈의 조각",
+      "prompt": "A single black crystal shard with shifting rainbow colors inside. Compact shape. Vertical layout. [512x1024, 1:2]",
+      "size_w": 1,
+      "size_h": 2
+    },
+    "item4": {
+      "name": "Eye of Chaos",
+      "name_kr": "혼돈의 눈",
+      "prompt": "A single sphere with seven swirling attribute colors contained inside. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item5": {
+      "name": "Ink Vortex",
+      "name_kr": "잉크 소용돌이",
+      "prompt": "A single disc of swirling black ink forming a contained vortex with rainbow energy spirals inside. Compact shape. [1024x1024, 1:1]",
+      "size_w": 2,
+      "size_h": 2
+    },
+    "item6": {
+      "name": "Chaos Nib",
+      "name_kr": "혼돈의 펜촉",
+      "prompt": "A single sharp pen nib with multi-colored ink coating on tip. No dripping liquid. Compact shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item7": {
+      "name": "Ink Storm Orb",
+      "name_kr": "잉크 폭풍 구체",
+      "prompt": "A single tall orb with raging ink storm and rainbow lightning contained inside. Entire orb fully visible. Vertical layout. [512x2048, 1:4]",
+      "size_w": 1,
+      "size_h": 4
+    },
+    "item8": {
+      "name": "Chaos Stroke",
+      "name_kr": "카오스 스트로크",
+      "prompt": "A single cosmic ink droplet containing all seven colors swirling inside. Compact round shape. [1024x1024, 1:1]",
+      "size_w": 1,
+      "size_h": 1
+    },
+    "item9": {
+      "name": "Grand Ink Brush",
+      "name_kr": "잉크의 대붓",
+      "prompt": "A single grand calligraphy brush with rainbow ink on bristle tips, golden handle with cat-paw emblem. Entire brush fully visible. Vertical rectangle. [768x1152, 2:3]",
+      "size_w": 2,
+      "size_h": 3
+    }
+  }
+}

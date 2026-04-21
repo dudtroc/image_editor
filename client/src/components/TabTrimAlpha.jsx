@@ -97,6 +97,7 @@ export default function TabTrimAlpha() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [keepOriginalName, setKeepOriginalName] = useState(false);
   const inputRef = useRef(null);
 
   const addFiles = (fileList) => {
@@ -156,10 +157,14 @@ export default function TabTrimAlpha() {
   };
 
   const download = (dataUrl, filename, w, h) => {
-    const base = filename.replace(/\.[^.]+$/, "") || "image";
     const a = document.createElement("a");
     a.href = dataUrl;
-    a.download = `${base}-trim-${w}x${h}.png`;
+    if (keepOriginalName) {
+      a.download = filename;
+    } else {
+      const base = filename.replace(/\.[^.]+$/, "") || "image";
+      a.download = `${base}-trim-${w}x${h}.png`;
+    }
     a.click();
   };
 
@@ -194,6 +199,16 @@ export default function TabTrimAlpha() {
             알파가 이 값보다 큰 픽셀만 &quot;내용&quot;으로 봅니다. (0이면 알파 1 이상이면 포함.
             반투명 가장자리를 잘라내려면 값을 올리세요.)
           </p>
+        </div>
+        <div className="option-row">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={keepOriginalName}
+              onChange={(e) => setKeepOriginalName(e.target.checked)}
+            />
+            <span className="option-label">원본 파일명으로 저장</span>
+          </label>
         </div>
       </div>
 

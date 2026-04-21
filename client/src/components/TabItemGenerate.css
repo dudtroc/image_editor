@@ -1,0 +1,335 @@
+/* ── 전체 레이아웃 ─────────────────────────────── */
+.tab-item-gen .tab-desc {
+  color: var(--muted);
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.tab-item-gen .tab-desc code {
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.tab-item-gen-muted {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ── 선택 액션 ─────────────────────────────────── */
+.tab-item-gen-select-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tab-item-gen-count {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-left: 4px;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+/* ── Stage 그리드 ──────────────────────────────── */
+.tab-item-gen-stage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tab-item-gen-stage-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.tab-item-gen-stage-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+.tab-item-gen-stage-header input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.tab-item-gen-stage-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+/* ── 아이템 리스트 ─────────────────────────────── */
+.tab-item-gen-item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tab-item-gen-item-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tab-item-gen-item-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+  padding: 4px 0;
+}
+
+.tab-item-gen-item-label.done {
+  color: #4ade80;
+}
+
+.tab-item-gen-item-label.err {
+  color: #fca5a5;
+}
+
+.tab-item-gen-item-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.tab-item-gen-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-item-gen-item-size {
+  font-size: 0.8rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ── 진행 상태 ─────────────────────────────────── */
+.tab-item-gen-step {
+  font-size: 0.8rem;
+  padding-left: 32px;
+  line-height: 1.3;
+}
+
+.tab-item-gen-step.generating { color: #60a5fa; }
+.tab-item-gen-step.removing-bg { color: #a78bfa; }
+.tab-item-gen-step.trimming { color: #fbbf24; }
+.tab-item-gen-step.resizing { color: #34d399; }
+.tab-item-gen-step.done { color: #4ade80; }
+.tab-item-gen-step.error { color: #fca5a5; }
+
+.tab-item-gen-err-msg {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+/* ── 실행 버튼 영역 ───────────────────────────── */
+.tab-item-gen-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.tab-item-gen .btn-primary {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  background: var(--accent);
+  color: white;
+}
+
+.tab-item-gen .btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.tab-item-gen .btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tab-item-gen .btn-danger {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  background: #ef4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.tab-item-gen .btn-danger:hover {
+  background: #dc2626;
+}
+
+.tab-item-gen .btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+}
+
+.tab-item-gen .btn-secondary:hover {
+  background: var(--border);
+}
+
+.tab-item-gen-progress-summary {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* ── 결과 ──────────────────────────────────────── */
+.tab-item-gen-results {
+  margin-top: 8px;
+}
+
+.tab-item-gen-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tab-item-gen-results-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.tab-item-gen .btn-download-all {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tab-item-gen .btn-download-all:hover {
+  background: var(--accent-hover);
+}
+
+/* ── 패딩 재적용 ──────────────────────────────── */
+.tab-item-gen-padding-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.tab-item-gen-padding-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.tab-item-gen-padding-input {
+  width: 80px;
+  padding: 6px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.tab-item-gen-padding-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.tab-item-gen-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.tab-item-gen-result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-item-gen-result-name {
+  font-size: 0.85rem;
+  color: var(--text);
+  font-weight: 500;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.tab-item-gen-result-size {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.tab-item-gen-result-img {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  background: repeating-conic-gradient(#2a2a30 0% 25%, #1a1a1e 0% 50%) 50% / 16px 16px;
+  border-radius: 8px;
+}
+
+/* ── 공통 ──────────────────────────────────────── */
+.tab-item-gen .message.error {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
