@@ -13,6 +13,8 @@ import TabGeminiVideo from "./components/TabGeminiVideo";
 import TabMaskImage from "./components/TabMaskImage";
 import TabMaskUnion from "./components/TabMaskUnion";
 import TabTrimAlpha from "./components/TabTrimAlpha";
+import TabAlphaMask from "./components/TabAlphaMask";
+import TabMaskRemoveBg from "./components/TabMaskRemoveBg";
 import TabGrayscale from "./components/TabGrayscale";
 import TabPasteImages from "./components/TabPasteImages";
 import TabVideoMaskReplace from "./components/TabVideoMaskReplace";
@@ -25,7 +27,7 @@ const TAB_GROUPS = [
     id: "generate",
     label: "생성",
     tabs: [
-      { id: "gemini-image", label: "Gemini 이미지 생성" },
+      { id: "gemini-image", label: "이미지 생성" },
       { id: "gemini-video", label: "Gemini 동영상 생성" },
       { id: "crop-to-asset", label: "크롭 → 에셋" },
       { id: "veo-generate", label: "동영상 생성 (Veo)" },
@@ -41,10 +43,12 @@ const TAB_GROUPS = [
       { id: "split", label: "이미지 분할" },
       { id: "paste-images", label: "이미지 붙이기" },
       { id: "trim-alpha", label: "투명 영역 자르기 (알파)" },
+      { id: "alpha-mask", label: "알파 마스크 생성" },
       { id: "grayscale", label: "흑백 변환 (RGBA)" },
       { id: "mask-image", label: "마스크 이미지 (흰색 유지)" },
       { id: "mask-union", label: "마스크 합치기 (흰색 병합)" },
       { id: "remove-bg", label: "배경 제거 (RGB → RGBA)" },
+      { id: "mask-remove-bg", label: "배경 제거 (mask image)" },
     ],
   },
   {
@@ -131,6 +135,8 @@ export default function App() {
         )}
         {effectiveTab === "paste-images" && <TabPasteImages />}
         {effectiveTab === "trim-alpha" && <TabTrimAlpha />}
+        {effectiveTab === "alpha-mask" && <TabAlphaMask />}
+        {effectiveTab === "mask-remove-bg" && <TabMaskRemoveBg />}
         {effectiveTab === "grayscale" && <TabGrayscale />}
         {effectiveTab === "mask-image" && (
           <TabMaskImage />

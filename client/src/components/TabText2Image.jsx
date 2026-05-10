@@ -3,7 +3,7 @@ import "./TabText2Image.css";
 
 const API_BASE = "/api";
 
-const DEFAULT_MODELS = { openai: "gpt-image-1.5", gemini: "gemini-2.0-flash-exp-image-generation" };
+const DEFAULT_MODELS = { openai: "gpt-image-2", gemini: "gemini-2.0-flash-exp-image-generation" };
 
 function modelId(entry) {
   return typeof entry === "string" ? entry : entry.id;
@@ -30,6 +30,7 @@ export default function TabText2Image({ provider }) {
       .then((data) => setModels(data))
       .catch(() => setModels({
         openai: [
+          { id: "gpt-image-2", label: "GPT Image 2", sizes: [], qualities: [] },
           { id: "gpt-image-1.5", label: "GPT Image 1.5", sizes: [], qualities: [] },
           { id: "gpt-image-1", label: "GPT Image 1", sizes: [], qualities: [] },
           { id: "dall-e-3", label: "DALL·E 3", sizes: [], qualities: [] },

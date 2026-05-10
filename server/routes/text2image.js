@@ -1,6 +1,7 @@
 import express from "express";
 import { generateImageOpenAI } from "../services/openaiText2Image.js";
 import { generateImageGemini } from "../services/geminiText2Image.js";
+import { image2imageOpenAI } from "../services/openaiImage2Image.js";
 import { OPENAI_IMAGE_MODELS } from "../services/openaiText2Image.js";
 import { GEMINI_IMAGE_MODELS } from "../services/geminiText2Image.js";
 
@@ -41,9 +42,14 @@ router.post("/", async (req, res) => {
     const geminiOpts = { aspectRatio, imageSize };
     if (refList.length) geminiOpts.referenceImagesB64 = refList;
 
-    const generate = prov === "gemini"
-      ? () => generateImageGemini(prompt.trim(), apiKey, model, geminiOpts)
-      : () => generateImageOpenAI(prompt.trim(), apiKey, model, { size, quality });
+    let generate;
+    if (prov === "gemini") {
+      generate = () => generateImageGemini(prompt.trim(), apiKey, model, geminiOpts);
+    } else if (refList.length) {
+      generate = () => image2imageOpenAI(refList, prompt.trim(), apiKey, model, { size, quality });
+    } else {
+      generate = () => generateImageOpenAI(prompt.trim(), apiKey, model, { size, quality });
+    }
 
     const b64 = await generate();
     res.json({ success: true, data: b64 });

@@ -1,9 +1,10 @@
 import OpenAI from "openai";
 
-const DEFAULT_MODEL = "gpt-image-1.5";
+const DEFAULT_MODEL = "gpt-image-2";
 
-/** GPT Image: gpt-image-1.5, gpt-image-1. DALL·E: dall-e-3, dall-e-2 (deprecated 2026-05-12) */
+/** GPT Image: gpt-image-2, gpt-image-1.5, gpt-image-1. DALL·E: dall-e-3, dall-e-2 (deprecated 2026-05-12) */
 const OPENAI_IMAGE_MODEL_IDS = [
+  "gpt-image-2",
   "gpt-image-1.5",
   "gpt-image-1",
   "dall-e-3",
@@ -11,6 +12,16 @@ const OPENAI_IMAGE_MODEL_IDS = [
 ];
 
 /** 모델별 size/quality 옵션 (API 문서 기준) */
+const GPT_IMAGE2_SIZES = [
+  { value: "1024x1024", label: "1024×1024 (정사각)" },
+  { value: "1536x1024", label: "1536×1024 (가로)" },
+  { value: "1024x1536", label: "1024×1536 (세로)" },
+  { value: "1920x1080", label: "1920×1080 (FHD 가로)" },
+  { value: "1080x1920", label: "1080×1920 (FHD 세로)" },
+  { value: "2560x1440", label: "2560×1440 (QHD)" },
+  { value: "3840x2160", label: "3840×2160 (4K)" },
+  { value: "auto", label: "자동" },
+];
 const GPT_IMAGE_SIZES = [
   { value: "1024x1024", label: "1024×1024 (정사각)" },
   { value: "1536x1024", label: "1536×1024 (가로)" },
@@ -40,13 +51,14 @@ const DALLE2_SIZES = [
 
 /** @type {{ id: string, label: string, sizes: { value: string, label: string }[], qualities?: { value: string, label: string }[] }[]} */
 export const OPENAI_IMAGE_MODELS = [
+  { id: "gpt-image-2", label: "GPT Image 2", sizes: GPT_IMAGE2_SIZES, qualities: GPT_IMAGE_QUALITIES },
   { id: "gpt-image-1.5", label: "GPT Image 1.5", sizes: GPT_IMAGE_SIZES, qualities: GPT_IMAGE_QUALITIES },
   { id: "gpt-image-1", label: "GPT Image 1", sizes: GPT_IMAGE_SIZES, qualities: GPT_IMAGE_QUALITIES },
   { id: "dall-e-3", label: "DALL·E 3", sizes: DALLE3_SIZES, qualities: DALLE3_QUALITIES },
   { id: "dall-e-2", label: "DALL·E 2", sizes: DALLE2_SIZES },
 ];
 
-const GPT_IMAGE_IDS = ["gpt-image-1.5", "gpt-image-1", "gpt-image-1-mini"];
+const GPT_IMAGE_IDS = ["gpt-image-2", "gpt-image-1.5", "gpt-image-1", "gpt-image-1-mini"];
 
 function getOpenAIDefaults(model) {
   if (GPT_IMAGE_IDS.includes(model)) return { size: "1024x1024", quality: "medium" };

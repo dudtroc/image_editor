@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(cd /c/Users/dudtr/PROJECT/image_editor/client && npx vite build 2>&1 | tail -20)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(cd /c/Users/dudtr/PROJECT/image_editor/client && npm run build 2>&1 | tail -20)",
+      "WebSearch",
+      "Bash(npm run:*)",
+      "WebFetch(domain:developers.openai.com)",
+      "WebFetch(domain:platform.openai.com)"
     ]
   }
 }

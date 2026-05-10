@@ -1,9 +1,10 @@
 import OpenAI, { toFile } from "openai";
 
-const DEFAULT_MODEL = "gpt-image-1.5";
+const DEFAULT_MODEL = "gpt-image-2";
 
 /** 이미지 편집 지원 모델만 (edits 엔드포인트) */
 const OPENAI_IMAGE2IMAGE_MODEL_IDS = [
+  "gpt-image-2",
   "gpt-image-1.5",
   "gpt-image-1",
   "dall-e-2",
@@ -27,14 +28,15 @@ const DALLE2_SIZES = [
   { value: "1024x1024", label: "1024×1024" },
 ];
 
-/** image2image(edit)용 모델 목록: gpt-image-1, dall-e-2만 지원 */
+/** image2image(edit)용 모델 목록 */
 export const OPENAI_IMAGE2IMAGE_MODELS = [
+  { id: "gpt-image-2", label: "GPT Image 2", sizes: GPT_IMAGE_SIZES, qualities: GPT_IMAGE_QUALITIES },
   { id: "gpt-image-1.5", label: "GPT Image 1.5", sizes: GPT_IMAGE_SIZES, qualities: GPT_IMAGE_QUALITIES },
   { id: "gpt-image-1", label: "GPT Image 1", sizes: GPT_IMAGE_SIZES, qualities: GPT_IMAGE_QUALITIES },
   { id: "dall-e-2", label: "DALL·E 2", sizes: DALLE2_SIZES },
 ];
 
-const GPT_IMAGE_IDS = ["gpt-image-1.5", "gpt-image-1"];
+const GPT_IMAGE_IDS = ["gpt-image-2", "gpt-image-1.5", "gpt-image-1"];
 
 function getDefaults(model) {
   if (GPT_IMAGE_IDS.includes(model)) return { size: "1024x1024", quality: "medium" };

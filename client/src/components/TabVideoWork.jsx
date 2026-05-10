@@ -183,12 +183,18 @@ export default function TabVideoWork({ provider = "openai" }) {
   const [cropHeight, setCropHeight] = useState(720);
   const [cropProgress, setCropProgress] = useState(null);
   const [removeBgProgress, setRemoveBgProgress] = useState(null);
+  const [removeBgMethod, setRemoveBgMethod] = useState("triton"); // "triton" | "mask"
+  const [maskFile, setMaskFile] = useState(null);
+  const [maskPreview, setMaskPreview] = useState("");
+  const [maskThreshold, setMaskThreshold] = useState(250);
+  const [isMaskDragging, setIsMaskDragging] = useState(false);
   const [videoFps, setVideoFps] = useState(24);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [mp4Loading, setMp4Loading] = useState(false);
   const inputRef = useRef(null);
   const videoRef = useRef(null);
+  const maskInputRef = useRef(null);
 
   const onSelectVideo = useCallback((fileList) => {
     const file = Array.from(fileList || []).find((f) => f.type.startsWith("video/"));
@@ -253,38 +259,120 @@ export default function TabVideoWork({ provider = "openai" }) {
     setCropProgress(null);
   }, [frames, cropWidth, cropHeight]);
 
-  /** 배경 제거: 1024x1024로 변환 후 전송 → 결과 수신 → 원본 크기로 리사이즈하여 저장 */
+  /** 마스크 기반 배경 제거: blob + mask imageData → base64 (알파 적용) */
+  const applyMaskToBlob = useCallback((blob, maskImgData, maskW, maskH, threshold) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(blob);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const w = img.naturalWidth || img.width;
+        const h = img.naturalHeight || img.height;
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const imageData = ctx.getImageData(0, 0, w, h);
+        const d = imageData.data;
+        const md = maskImgData.data;
+        const t = Math.min(255, Math.max(0, threshold));
+
+        for (let y = 0; y < h; y++) {
+          const my = Math.min(Math.floor((y / h) * maskH), maskH - 1);
+          for (let x = 0; x < w; x++) {
+            const mx = Math.min(Math.floor((x / w) * maskW), maskW - 1);
+            const mi = (my * maskW + mx) * 4;
+            if (md[mi] >= t && md[mi + 1] >= t && md[mi + 2] >= t) {
+              d[(y * w + x) * 4 + 3] = 0;
+            }
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        const dataUrl = canvas.toDataURL("image/png", 0.95);
+        const b64 = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
+        resolve(b64);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("프레임 로드 실패"));
+      };
+      img.src = url;
+    });
+  }, []);
+
+  /** 마스크 이미지를 ImageData로 로드 */
+  const loadMaskImageData = useCallback((file) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const w = img.naturalWidth || img.width;
+        const h = img.naturalHeight || img.height;
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        resolve({ data: ctx.getImageData(0, 0, w, h), w, h });
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("마스크 이미지를 불러올 수 없습니다."));
+      };
+      img.src = url;
+    });
+  }, []);
+
+  /** 배경 제거: Triton 또는 마스크 기반 */
   const applyRemoveBg = useCallback(async () => {
     if (frames.length === 0) return;
+    if (removeBgMethod === "mask" && !maskFile) {
+      setError("마스크 이미지를 선택해 주세요.");
+      return;
+    }
     setError("");
     setRemoveBgProgress({ current: 0, total: frames.length });
     const getBlob = (f) => (cropEnabled && f.cropBlob ? f.cropBlob : f.blob);
     try {
       const next = [...frames];
-      for (let i = 0; i < frames.length; i++) {
-        const rawBlob = getBlob(frames[i]);
-        const { w: origW, h: origH } = await blobGetSize(rawBlob);
-        const blobToSend = await blobTo1024Centered(rawBlob);
-        const form = new FormData();
-        form.append("provider", "triton");
-        form.append("images", blobToSend, `frame_${i + 1}.png`);
-        const res = await fetch(`${API_BASE}/remove-bg`, { method: "POST", body: form });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "배경 제거 요청 실패");
-        const result = data.results?.[0];
-        if (result?.success && result?.data) {
-          const rgbaOriginalSize = await resizeBase64To(result.data, origW, origH);
-          next[i] = { ...next[i], rgba: rgbaOriginalSize };
+
+      if (removeBgMethod === "mask") {
+        const { data: maskData, w: maskW, h: maskH } = await loadMaskImageData(maskFile);
+        for (let i = 0; i < frames.length; i++) {
+          const rawBlob = getBlob(frames[i]);
+          const rgba = await applyMaskToBlob(rawBlob, maskData, maskW, maskH, maskThreshold);
+          next[i] = { ...next[i], rgba };
+          setFrames([...next]);
+          setRemoveBgProgress({ current: i + 1, total: frames.length });
         }
-        setFrames([...next]);
-        setRemoveBgProgress({ current: i + 1, total: frames.length });
+      } else {
+        for (let i = 0; i < frames.length; i++) {
+          const rawBlob = getBlob(frames[i]);
+          const { w: origW, h: origH } = await blobGetSize(rawBlob);
+          const blobToSend = await blobTo1024Centered(rawBlob);
+          const form = new FormData();
+          form.append("provider", "triton");
+          form.append("images", blobToSend, `frame_${i + 1}.png`);
+          const res = await fetch(`${API_BASE}/remove-bg`, { method: "POST", body: form });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "배경 제거 요청 실패");
+          const result = data.results?.[0];
+          if (result?.success && result?.data) {
+            const rgbaOriginalSize = await resizeBase64To(result.data, origW, origH);
+            next[i] = { ...next[i], rgba: rgbaOriginalSize };
+          }
+          setFrames([...next]);
+          setRemoveBgProgress({ current: i + 1, total: frames.length });
+        }
       }
     } catch (e) {
       setError(e.message || "배경 제거 실패");
     } finally {
       setRemoveBgProgress(null);
     }
-  }, [frames, cropEnabled]);
+  }, [frames, cropEnabled, removeBgMethod, maskFile, maskThreshold, applyMaskToBlob, loadMaskImageData]);
 
   /** 다운로드: rgba 있으면 사용, 없으면 크롭/원본 blob */
   const getFrameBlob = useCallback((f) => {
@@ -501,9 +589,114 @@ export default function TabVideoWork({ provider = "openai" }) {
 
           <section className="removebg-section">
             <label className="section-label">3단계 (선택): 배경 제거 (RGB → RGBA)</label>
-            <p className="removebg-hint">
-              프레임 이미지를 한 장씩 Triton API로 배경 제거합니다. (상단 API 설정과 무관하게 Triton만 사용)
-            </p>
+            <div className="removebg-method-row">
+              <label className="removebg-method-label">
+                <input
+                  type="radio"
+                  name="removeBgMethod"
+                  value="triton"
+                  checked={removeBgMethod === "triton"}
+                  onChange={() => setRemoveBgMethod("triton")}
+                />
+                Triton (AI 모델)
+              </label>
+              <label className="removebg-method-label">
+                <input
+                  type="radio"
+                  name="removeBgMethod"
+                  value="mask"
+                  checked={removeBgMethod === "mask"}
+                  onChange={() => setRemoveBgMethod("mask")}
+                />
+                마스크 이미지 기반
+              </label>
+            </div>
+            {removeBgMethod === "triton" && (
+              <p className="removebg-hint">
+                프레임 이미지를 한 장씩 Triton API로 배경 제거합니다. (상단 API 설정과 무관하게 Triton만 사용)
+              </p>
+            )}
+            {removeBgMethod === "mask" && (
+              <div className="removebg-mask-options">
+                <p className="removebg-hint">
+                  마스크 이미지의 흰색 영역을 투명하게 만듭니다. AI 모델 없이 즉시 처리됩니다.
+                </p>
+                <div className="removebg-mask-upload-row">
+                  <div
+                    className={`upload-zone removebg-mask-zone ${isMaskDragging ? "dragging" : ""}`}
+                    onClick={() => maskInputRef.current?.click()}
+                    onDragOver={(e) => { e.preventDefault(); setIsMaskDragging(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); setIsMaskDragging(false); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsMaskDragging(false);
+                      const f = e.dataTransfer.files?.[0];
+                      if (f && f.type.startsWith("image/")) {
+                        setMaskFile(f);
+                        if (maskPreview) URL.revokeObjectURL(maskPreview);
+                        setMaskPreview(URL.createObjectURL(f));
+                      }
+                    }}
+                  >
+                    <input
+                      ref={maskInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="upload-input"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f && f.type.startsWith("image/")) {
+                          setMaskFile(f);
+                          if (maskPreview) URL.revokeObjectURL(maskPreview);
+                          setMaskPreview(URL.createObjectURL(f));
+                        }
+                        if (maskInputRef.current) maskInputRef.current.value = "";
+                      }}
+                    />
+                    {maskPreview ? (
+                      <img src={maskPreview} alt="마스크 미리보기" className="removebg-mask-preview-img" />
+                    ) : (
+                      <span className="upload-text">마스크 이미지 드래그 또는 클릭</span>
+                    )}
+                  </div>
+                  {maskFile && (
+                    <div className="removebg-mask-info">
+                      <span className="removebg-mask-name">{maskFile.name}</span>
+                      <button
+                        type="button"
+                        className="btn-clear"
+                        onClick={() => {
+                          if (maskPreview) URL.revokeObjectURL(maskPreview);
+                          setMaskFile(null);
+                          setMaskPreview("");
+                        }}
+                      >
+                        제거
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="removebg-mask-threshold-row">
+                  <span className="removebg-mask-threshold-label">흰색 임계값</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={255}
+                    value={maskThreshold}
+                    onChange={(e) => setMaskThreshold(Number(e.target.value))}
+                    className="removebg-mask-slider"
+                  />
+                  <input
+                    type="number"
+                    min={0}
+                    max={255}
+                    value={maskThreshold}
+                    onChange={(e) => setMaskThreshold(Number(e.target.value))}
+                    className="removebg-mask-number-input"
+                  />
+                </div>
+              </div>
+            )}
             <button
               type="button"
               className="btn-primary"

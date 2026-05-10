@@ -4,7 +4,7 @@ import "./TabGeminiImage.css";
 
 const API_BASE = "/api";
 
-const DEFAULT_MODEL = "gemini-2.0-flash-exp-image-generation";
+const DEFAULT_MODELS = { gemini: "gemini-2.0-flash-exp-image-generation", openai: "gpt-image-2" };
 
 function modelId(entry) {
   return typeof entry === "string" ? entry : entry.id;
@@ -18,33 +18,49 @@ function newPromptRow() {
 }
 
 export default function TabGeminiImage() {
+  const [provider, setProvider] = useState("gemini");
   const [promptRows, setPromptRows] = useState(() => [newPromptRow()]);
   const [batchResults, setBatchResults] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [models, setModels] = useState([]);
+  const [allModels, setAllModels] = useState({ gemini: [], openai: [] });
   const [modelsLoaded, setModelsLoaded] = useState(false);
-  const [model, setModel] = useState(DEFAULT_MODEL);
+  const [model, setModel] = useState(DEFAULT_MODELS.gemini);
   const [aspectRatio, setAspectRatio] = useState("1:1");
   const [imageSize, setImageSize] = useState("1K");
+  const [size, setSize] = useState("1024x1024");
+  const [quality, setQuality] = useState("medium");
   const [referenceImages, setReferenceImages] = useState([]);
   const [inputDragging, setInputDragging] = useState(false);
   const fileInputRef = useRef(null);
+
+  const models = useMemo(() => allModels[provider] || [], [allModels, provider]);
 
   useEffect(() => {
     fetch(`${API_BASE}/text2image/models`)
       .then((r) => r.json())
       .then((data) => {
-        const list = Array.isArray(data.gemini) ? data.gemini : [];
-        setModels(list);
+        setAllModels({
+          gemini: Array.isArray(data.gemini) ? data.gemini : [],
+          openai: Array.isArray(data.openai) ? data.openai : [],
+        });
       })
       .catch(() =>
-        setModels([
-          { id: "gemini-2.0-flash-exp-image-generation", label: "Gemini 2.0 Flash (실험)", aspectRatios: [], imageSizes: [] },
-          { id: "gemini-2.5-flash-preview-image", label: "Gemini 2.5 Flash Image", aspectRatios: [], imageSizes: [] },
-          { id: "gemini-3.1-flash-image-preview", label: "Nano Banana 2", aspectRatios: [], imageSizes: [] },
-          { id: "gemini-3-pro-image-preview", label: "Nano Banana Pro", aspectRatios: [], imageSizes: [] },
-        ])
+        setAllModels({
+          gemini: [
+            { id: "gemini-2.0-flash-exp-image-generation", label: "Gemini 2.0 Flash (실험)", aspectRatios: [], imageSizes: [] },
+            { id: "gemini-2.5-flash-preview-image", label: "Gemini 2.5 Flash Image", aspectRatios: [], imageSizes: [] },
+            { id: "gemini-3.1-flash-image-preview", label: "Nano Banana 2", aspectRatios: [], imageSizes: [] },
+            { id: "gemini-3-pro-image-preview", label: "Nano Banana Pro", aspectRatios: [], imageSizes: [] },
+          ],
+          openai: [
+            { id: "gpt-image-2", label: "GPT Image 2", sizes: [], qualities: [] },
+            { id: "gpt-image-1.5", label: "GPT Image 1.5", sizes: [], qualities: [] },
+            { id: "gpt-image-1", label: "GPT Image 1", sizes: [], qualities: [] },
+            { id: "dall-e-3", label: "DALL·E 3", sizes: [], qualities: [] },
+            { id: "dall-e-2", label: "DALL·E 2", sizes: [] },
+          ],
+        })
       )
       .finally(() => setModelsLoaded(true));
   }, []);
@@ -57,21 +73,34 @@ export default function TabGeminiImage() {
     if (models.length) {
       const ids = models.map(modelId);
       setModel((prev) => (ids.includes(prev) ? prev : ids[0]));
+    } else {
+      setModel(DEFAULT_MODELS[provider]);
     }
-  }, [models]);
+  }, [provider, models]);
 
   useEffect(() => {
     const entry = currentModelEntry;
     if (!entry) return;
-    if (entry.aspectRatios?.length) {
-      const validRatios = entry.aspectRatios.map((r) => r.value);
-      setAspectRatio((prev) => (validRatios.includes(prev) ? prev : validRatios[0]));
+    if (provider === "gemini") {
+      if (entry.aspectRatios?.length) {
+        const validRatios = entry.aspectRatios.map((r) => r.value);
+        setAspectRatio((prev) => (validRatios.includes(prev) ? prev : validRatios[0]));
+      }
+      if (entry.imageSizes?.length) {
+        const validSizes = entry.imageSizes.map((s) => s.value);
+        setImageSize((prev) => (validSizes.includes(prev) ? prev : validSizes[0]));
+      }
+    } else {
+      if (entry.sizes?.length) {
+        const validSizes = entry.sizes.map((s) => s.value);
+        setSize((prev) => (validSizes.includes(prev) ? prev : validSizes[0]));
+      }
+      if (entry.qualities?.length) {
+        const validQualities = entry.qualities.map((q) => q.value);
+        setQuality((prev) => (validQualities.includes(prev) ? prev : validQualities[0]));
+      }
     }
-    if (entry.imageSizes?.length) {
-      const validSizes = entry.imageSizes.map((s) => s.value);
-      setImageSize((prev) => (validSizes.includes(prev) ? prev : validSizes[0]));
-    }
-  }, [currentModelEntry]);
+  }, [provider, currentModelEntry]);
 
   const readFileAsDataUrl = (file) =>
     new Promise((resolve, reject) => {
@@ -125,11 +154,16 @@ export default function TabGeminiImage() {
   const fetchOneImage = async (promptText) => {
     const body = {
       prompt: promptText,
-      provider: "gemini",
+      provider,
       model,
-      aspectRatio,
-      imageSize,
     };
+    if (provider === "gemini") {
+      body.aspectRatio = aspectRatio;
+      body.imageSize = imageSize;
+    } else {
+      body.size = size;
+      if (currentModelEntry?.qualities?.length) body.quality = quality;
+    }
     if (referenceImages.length) {
       body.referenceImages = referenceImages.map((r) => r.dataUrl);
     }
@@ -187,31 +221,37 @@ export default function TabGeminiImage() {
       const safeModel = model.replace(/[^\w.-]/g, "_");
       const a = document.createElement("a");
       a.href = `data:image/png;base64,${imageB64}`;
-      a.download = `gemini-${safeModel}-${index + 1}-${Date.now()}.png`;
+      a.download = `${provider}-${safeModel}-${index + 1}-${Date.now()}.png`;
       a.click();
     },
-    [model]
+    [model, provider]
   );
 
   return (
     <div className="tab-text2image tab-gemini-image">
       <p className="tab-desc">
-        Google Gemini 이미지 생성 전용입니다. 서버 <code className="tab-gemini-image-env">.env</code>에{" "}
-        <code className="tab-gemini-image-env">GEMINI_API_KEY</code>가 설정되어 있어야 합니다. 모델은{" "}
-        <a
-          href="https://ai.google.dev/gemini-api/docs/image-generation"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="tab-gemini-image-link"
-        >
-          Gemini 이미지 생성 문서
-        </a>
-        기준으로 호환 목록을 유지합니다. 참조 이미지는 넣지 않으면 텍스트만으로 생성하고, 넣으면 여러 장을 함께 넣을 수 있으며 프롬프트와 함께 사용됩니다.{" "}
-        <span className="tab-gemini-image-batch-hint">+ 프롬프트 추가</span>로 칸을 늘리면 여러 개를 한 번에(병렬) 생성할 수 있으며, 비어 있는 칸은 건너뜁니다.
+        Gemini 또는 OpenAI 이미지 생성 모델을 사용합니다. 서버 <code className="tab-gemini-image-env">.env</code>에{" "}
+        <code className="tab-gemini-image-env">GEMINI_API_KEY</code> 또는{" "}
+        <code className="tab-gemini-image-env">OPEN_AI_API_KEY</code>가 설정되어 있어야 합니다.{" "}
+        참조 이미지를 넣으면 이미지 편집 모드로 동작합니다.{" "}
+        <span className="tab-gemini-image-batch-hint">+ 프롬프트 추가</span>로 칸을 늘리면 여러 개를 한 번에(병렬) 생성할 수 있습니다.
       </p>
 
+      <div className="model-row">
+        <label className="model-label">Provider</label>
+        <select
+          className="model-select"
+          value={provider}
+          onChange={(e) => setProvider(e.target.value)}
+          aria-label="이미지 생성 API 선택"
+        >
+          <option value="gemini">Google Gemini</option>
+          <option value="openai">OpenAI</option>
+        </select>
+      </div>
+
       <div className="tab-gemini-image-input-section">
-        <span className="tab-gemini-image-input-label">참조 이미지 (선택, 여러 장)</span>
+        <span className="tab-gemini-image-input-label">참조 이미지 (선택, 여러 장{provider === "openai" ? " · 최대 16장" : ""})</span>
         <div
           className={`tab-gemini-image-drop ${inputDragging ? "dragging" : ""}`}
           onClick={() => fileInputRef.current?.click()}
@@ -295,7 +335,7 @@ export default function TabGeminiImage() {
             className="model-select"
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            aria-label="Gemini 이미지 생성 모델"
+            aria-label="이미지 생성 모델"
             disabled={!models.length}
           >
             {models.map((m) => (
@@ -307,7 +347,7 @@ export default function TabGeminiImage() {
         )}
       </div>
 
-      {currentModelEntry?.aspectRatios?.length > 0 && (
+      {provider === "gemini" && currentModelEntry?.aspectRatios?.length > 0 && (
         <div className="model-row">
           <label className="model-label">비율</label>
           <select
@@ -325,7 +365,7 @@ export default function TabGeminiImage() {
         </div>
       )}
 
-      {currentModelEntry?.imageSizes?.length > 0 && (
+      {provider === "gemini" && currentModelEntry?.imageSizes?.length > 0 && (
         <div className="model-row">
           <label className="model-label">해상도</label>
           <select
@@ -337,6 +377,42 @@ export default function TabGeminiImage() {
             {currentModelEntry.imageSizes.map((s) => (
               <option key={s.value} value={s.value}>
                 {s.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {provider === "openai" && currentModelEntry?.sizes?.length > 0 && (
+        <div className="model-row">
+          <label className="model-label">해상도</label>
+          <select
+            className="model-select"
+            value={size}
+            onChange={(e) => setSize(e.target.value)}
+            aria-label="해상도 선택"
+          >
+            {currentModelEntry.sizes.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {provider === "openai" && currentModelEntry?.qualities?.length > 0 && (
+        <div className="model-row">
+          <label className="model-label">품질</label>
+          <select
+            className="model-select"
+            value={quality}
+            onChange={(e) => setQuality(e.target.value)}
+            aria-label="품질 선택"
+          >
+            {currentModelEntry.qualities.map((q) => (
+              <option key={q.value} value={q.value}>
+                {q.label}
               </option>
             ))}
           </select>

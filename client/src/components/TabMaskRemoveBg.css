@@ -1,0 +1,83 @@
+.tab-mask-remove-bg .mask-remove-bg-options .option-row {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-slider {
+  flex: 1;
+  min-width: 120px;
+  max-width: 240px;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-number {
+  width: 4.5rem;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-hint {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+  max-width: 52ch;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-inputs {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-input-group {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-input-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--fg, #333);
+}
+
+.tab-mask-remove-bg .mask-remove-bg-mask-zone {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-mask-preview {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-mask-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.tab-mask-remove-bg .mask-remove-bg-mask-name {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.tab-mask-remove-bg .result-preview {
+  background: repeating-conic-gradient(#eee 0% 25%, #fff 0% 50%) 50% / 16px 16px;
+}
