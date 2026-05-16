@@ -95,6 +95,32 @@ function centerCropBlob(blob, targetW, targetH) {
   });
 }
 
+/** 이미지(blob)를 지정 사이즈로 리사이즈한 blob 반환 */
+function resizeBlobTo(blob, targetW, targetH) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(blob);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement("canvas");
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, targetW, targetH);
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error("리사이즈 실패"))),
+        "image/png",
+        0.95
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("이미지 로드 실패"));
+    };
+    img.src = url;
+  });
+}
+
 function b64ToBlob(b64, mime = "image/png") {
   const bin = atob(b64);
   const arr = new Uint8Array(bin.length);
@@ -182,6 +208,10 @@ export default function TabVideoWork({ provider = "openai" }) {
   const [cropWidth, setCropWidth] = useState(720);
   const [cropHeight, setCropHeight] = useState(720);
   const [cropProgress, setCropProgress] = useState(null);
+  const [resizeEnabled, setResizeEnabled] = useState(false);
+  const [resizeWidth, setResizeWidth] = useState(512);
+  const [resizeHeight, setResizeHeight] = useState(512);
+  const [resizeProgress, setResizeProgress] = useState(null);
   const [removeBgProgress, setRemoveBgProgress] = useState(null);
   const [removeBgMethod, setRemoveBgMethod] = useState("triton"); // "triton" | "mask"
   const [maskFile, setMaskFile] = useState(null);
@@ -231,7 +261,7 @@ export default function TabVideoWork({ provider = "openai" }) {
         (current, total) => setExtractProgress({ current, total })
       );
       setVideoFps(fps);
-      setFrames(blobs.map((blob) => ({ blob, cropBlob: null })));
+      setFrames(blobs.map((blob) => ({ blob, cropBlob: null, resizeBlob: null })));
     } catch (e) {
       setError(e.message || "프레임 추출 실패");
     } finally {
@@ -249,15 +279,36 @@ export default function TabVideoWork({ provider = "openai" }) {
     for (let i = 0; i < frames.length; i++) {
       try {
         const cropBlob = await centerCropBlob(frames[i].blob, tw, th);
-        next.push({ ...frames[i], cropBlob, rgba: null });
+        next.push({ ...frames[i], cropBlob, resizeBlob: null, rgba: null });
       } catch (e) {
-        next.push({ ...frames[i], rgba: null });
+        next.push({ ...frames[i], resizeBlob: null, rgba: null });
       }
       setCropProgress({ current: i + 1, total: frames.length });
     }
     setFrames(next);
     setCropProgress(null);
   }, [frames, cropWidth, cropHeight]);
+
+  const applyResize = useCallback(async () => {
+    if (frames.length === 0) return;
+    const tw = Math.max(1, Number(resizeWidth) || 512);
+    const th = Math.max(1, Number(resizeHeight) || 512);
+    setError("");
+    setResizeProgress({ current: 0, total: frames.length });
+    const next = [];
+    for (let i = 0; i < frames.length; i++) {
+      try {
+        const src = cropEnabled && frames[i].cropBlob ? frames[i].cropBlob : frames[i].blob;
+        const resizeBlob = await resizeBlobTo(src, tw, th);
+        next.push({ ...frames[i], resizeBlob, rgba: null });
+      } catch (e) {
+        next.push({ ...frames[i], rgba: null });
+      }
+      setResizeProgress({ current: i + 1, total: frames.length });
+    }
+    setFrames(next);
+    setResizeProgress(null);
+  }, [frames, cropEnabled, resizeWidth, resizeHeight]);
 
   /** 마스크 기반 배경 제거: blob + mask imageData → base64 (알파 적용) */
   const applyMaskToBlob = useCallback((blob, maskImgData, maskW, maskH, threshold) => {
@@ -334,7 +385,7 @@ export default function TabVideoWork({ provider = "openai" }) {
     }
     setError("");
     setRemoveBgProgress({ current: 0, total: frames.length });
-    const getBlob = (f) => (cropEnabled && f.cropBlob ? f.cropBlob : f.blob);
+    const getBlob = (f) => (f.resizeBlob ? f.resizeBlob : (cropEnabled && f.cropBlob ? f.cropBlob : f.blob));
     try {
       const next = [...frames];
 
@@ -377,6 +428,7 @@ export default function TabVideoWork({ provider = "openai" }) {
   /** 다운로드: rgba 있으면 사용, 없으면 크롭/원본 blob */
   const getFrameBlob = useCallback((f) => {
     if (f.rgba) return b64ToBlob(f.rgba);
+    if (f.resizeBlob) return f.resizeBlob;
     return cropEnabled && f.cropBlob ? f.cropBlob : f.blob;
   }, [cropEnabled]);
 
@@ -438,7 +490,7 @@ export default function TabVideoWork({ provider = "openai" }) {
   const [previewUrls, setPreviewUrls] = useState([]);
   useEffect(() => {
     const list = frames.map((f) =>
-      f.rgba ? `data:image/png;base64,${f.rgba}` : (cropEnabled && f.cropBlob ? f.cropBlob : f.blob)
+      f.rgba ? `data:image/png;base64,${f.rgba}` : (f.resizeBlob ? f.resizeBlob : (cropEnabled && f.cropBlob ? f.cropBlob : f.blob))
     );
     const urls = list.slice(0, 24).map((item) =>
       typeof item === "string" ? item : URL.createObjectURL(item)
@@ -584,6 +636,51 @@ export default function TabVideoWork({ provider = "openai" }) {
             </div>
             <p className="crop-hint">
               예: 1280×720 동영상에서 720×720 중앙 크롭 시, 좌우 280px씩 잘려 나갑니다.
+            </p>
+          </section>
+
+          <section className="resize-section">
+            <label className="section-label">2.5단계 (선택): 리사이즈</label>
+            <div className="resize-options">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={resizeEnabled}
+                  onChange={(e) => setResizeEnabled(e.target.checked)}
+                />
+                리사이즈 적용
+              </label>
+              <label>
+                너비 (px)
+                <input
+                  type="number"
+                  min={1}
+                  value={resizeWidth}
+                  onChange={(e) => setResizeWidth(Number(e.target.value) || 512)}
+                />
+              </label>
+              <label>
+                높이 (px)
+                <input
+                  type="number"
+                  min={1}
+                  value={resizeHeight}
+                  onChange={(e) => setResizeHeight(Number(e.target.value) || 512)}
+                />
+              </label>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={applyResize}
+                disabled={!resizeEnabled || !!resizeProgress}
+              >
+                {resizeProgress
+                  ? `리사이즈 중… ${resizeProgress.current}/${resizeProgress.total}`
+                  : "리사이즈 적용"}
+              </button>
+            </div>
+            <p className="crop-hint">
+              크롭된 이미지(또는 원본)를 지정한 너비×높이로 리사이즈합니다.
             </p>
           </section>
 
